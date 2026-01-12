@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Kj_bf_bump.png">
+	<!-- Created with Adobe Animate version 21.0.6.41649 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="bf bump0000" x="0" y="0" width="890" height="890" frameX="-20" frameY="-58" frameWidth="956" frameHeight="960"/>
+	<SubTexture name="bf bump0001" x="0" y="0" width="890" height="890" frameX="-20" frameY="-58" frameWidth="956" frameHeight="960"/>
+	<SubTexture name="bf bump0002" x="890" y="0" width="906" height="906" frameX="-15" frameY="-54" frameWidth="956" frameHeight="960"/>
+	<SubTexture name="bf bump0003" x="890" y="0" width="906" height="906" frameX="-15" frameY="-54" frameWidth="956" frameHeight="960"/>
+	<SubTexture name="bf bump0004" x="1796" y="0" width="943" height="942" frameX="-4" frameY="-17" frameWidth="956" frameHeight="960"/>
+	<SubTexture name="bf bump0005" x="1796" y="0" width="943" height="942" frameX="-4" frameY="-17" frameWidth="956" frameHeight="960"/>
+	<SubTexture name="bf bump0006" x="2739" y="0" width="956" height="956" frameX="0" frameY="0" frameWidth="956" frameHeight="960"/>
+	<SubTexture name="bf bump0007" x="2739" y="0" width="956" height="956" frameX="0" frameY="0" frameWidth="956" frameHeight="960"/>
+	<SubTexture name="bf bump0008" x="0" y="956" width="945" height="944" frameX="-3" frameY="-9" frameWidth="956" frameHeight="960"/>
+	<SubTexture name="bf bump0009" x="0" y="956" width="945" height="944" frameX="-3" frameY="-9" frameWidth="956" frameHeight="960"/>
+	<SubTexture name="bf bump0010" x="945" y="956" width="941" height="941" frameX="-4" frameY="-11" frameWidth="956" frameHeight="960"/>
+	<SubTexture name="bf bump0011" x="945" y="956" width="941" height="941" frameX="-4" frameY="-11" frameWidth="956" frameHeight="960"/>
+	<SubTexture name="bf bump0012" x="1886" y="956" width="938" height="937" frameX="-5" frameY="-14" frameWidth="956" frameHeight="960"/>
+	<SubTexture name="bf bump0013" x="1886" y="956" width="938" height="937" frameX="-5" frameY="-14" frameWidth="956" frameHeight="960"/>
+</TextureAtlas>

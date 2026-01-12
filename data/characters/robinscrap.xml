@@ -1,0 +1,9 @@
+<!DOCTYPE codename-engine-character>
+<character x="-900" y="-720" sprite="robinscrap" scale="0.2" icon="Robin" color="#FF643B" imagePath="robinscrap.png">
+	<anim name="idle" anim="robinscrap idle" x="0" y="0" fps="12" loop="false"/>
+	<anim name="singLEFT" anim="robinscrap left" x="0" y="0" fps="12" loop="false"/>
+	<anim name="singUP" anim="robinscrap up" x="0" y="122" fps="12" loop="false"/>
+	<anim name="singDOWN" anim="robinscrap down" x="0" y="65" fps="12" loop="false"/>
+	<anim name="singRIGHT" anim="robinscrap right" x="-35" y="145" fps="12" loop="false"/>
+	<anim name="cry" anim="robinscrap cry" x="-35" y="160" fps="12" loop="false"/>
+</character>

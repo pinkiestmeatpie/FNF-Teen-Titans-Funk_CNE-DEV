@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="BeastBoy.png">
+<SubTexture name="BeastBoy left0000" x="608" y="890" width="674" height="876" frameX="-23" frameY="-44" frameWidth="746" frameHeight="940" />
+<SubTexture name="BeastBoy left0001" x="1823" y="0" width="675" height="876" frameX="-38" frameY="-44" frameWidth="746" frameHeight="940" />
+<SubTexture name="BeastBoy up0000" x="0" y="0" width="607" height="890" frameX="-117" frameY="-31" frameWidth="746" frameHeight="940" />
+<SubTexture name="BeastBoy up0001" x="1823" y="876" width="608" height="876" frameX="-105" frameY="-44" frameWidth="746" frameHeight="940" />
+<SubTexture name="BeastBoy down0000" x="2008" y="1767" width="607" height="855" frameX="-86" frameY="-65" frameWidth="746" frameHeight="940" />
+<SubTexture name="BeastBoy down0001" x="2498" y="0" width="608" height="876" frameX="-105" frameY="-44" frameWidth="746" frameHeight="940" />
+<SubTexture name="BeastBoy right0000" x="0" y="1767" width="696" height="876" frameX="-34" frameY="-44" frameWidth="746" frameHeight="940" />
+<SubTexture name="BeastBoy right0001" x="696" y="1767" width="706" height="876" frameX="-7" frameY="-44" frameWidth="746" frameHeight="940" />
+<SubTexture name="BeastBoy idle0000" x="1402" y="1767" width="606" height="861" frameX="-103" frameY="-58" frameWidth="746" frameHeight="940" />
+<SubTexture name="BeastBoy idle0001" x="2498" y="876" width="608" height="873" frameX="-110" frameY="-47" frameWidth="746" frameHeight="940" />
+<SubTexture name="BeastBoy idle0002" x="0" y="890" width="608" height="877" frameX="-113" frameY="-44" frameWidth="746" frameHeight="940" />
+<SubTexture name="BeastBoy idle0003" x="607" y="0" width="608" height="879" frameX="-114" frameY="-42" frameWidth="746" frameHeight="940" />
+<SubTexture name="BeastBoy idle0004" x="1215" y="0" width="608" height="879" frameX="-114" frameY="-42" frameWidth="746" frameHeight="940" />
+</TextureAtlas>

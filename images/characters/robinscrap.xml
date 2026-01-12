@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="robinscrap.png">
+<SubTexture name="robinscrap idle0000" x="3430" y="2066" width="2160" height="1935" frameX="0" frameY="-4" frameWidth="2160" frameHeight="2160" />
+<SubTexture name="robinscrap idle0001" x="1518" y="5988" width="1217" height="1773" frameX="-523" frameY="-68" frameWidth="2160" frameHeight="2160" />
+<SubTexture name="robinscrap idle0002" x="6681" y="0" width="1623" height="1841" frameX="-537" frameY="-96" frameWidth="2160" frameHeight="2160" />
+<SubTexture name="robinscrap idle0003" x="2735" y="5988" width="1624" height="1765" frameX="-523" frameY="-83" frameWidth="2160" frameHeight="2160" />
+<SubTexture name="robinscrap idle0004" x="6591" y="5988" width="1072" height="1734" frameX="-628" frameY="-112" frameWidth="2160" frameHeight="2160" />
+<SubTexture name="robinscrap idle0005" x="4359" y="5988" width="1065" height="1765" frameX="-601" frameY="-100" frameWidth="2160" frameHeight="2160" />
+<SubTexture name="robinscrap left0000" x="3752" y="4060" width="1182" height="1875" frameX="-465" frameY="-66" frameWidth="2160" frameHeight="2160" />
+<SubTexture name="robinscrap left0001" x="6681" y="3674" width="1080" height="1800" frameX="-584" frameY="-88" frameWidth="2160" frameHeight="2160" />
+<SubTexture name="robinscrap left0002" x="5619" y="0" width="1062" height="1935" frameX="-668" frameY="-86" frameWidth="2160" frameHeight="2160" />
+<SubTexture name="robinscrap down0000" x="8304" y="1728" width="1423" height="1682" frameX="-436" frameY="-288" frameWidth="2160" frameHeight="2160" />
+<SubTexture name="robinscrap down0001" x="5424" y="5988" width="1167" height="1747" frameX="-594" frameY="-145" frameWidth="2160" frameHeight="2160" />
+<SubTexture name="robinscrap down0002" x="2007" y="4060" width="1745" height="1914" frameX="0" frameY="-148" frameWidth="2160" frameHeight="2160" />
+<SubTexture name="robinscrap down0003" x="0" y="2066" width="1714" height="1994" frameX="-22" frameY="-166" frameWidth="2160" frameHeight="2160" />
+<SubTexture name="robinscrap up0000" x="5619" y="1935" width="988" height="1885" frameX="-752" frameY="-22" frameWidth="2160" frameHeight="2160" />
+<SubTexture name="robinscrap up0001" x="0" y="4060" width="2007" height="1928" frameX="-6" frameY="-9" frameWidth="2160" frameHeight="2160" />
+<SubTexture name="robinscrap up0002" x="1781" y="0" width="1799" height="2033" frameX="-328" frameY="-47" frameWidth="2160" frameHeight="2160" />
+<SubTexture name="robinscrap up0003" x="0" y="0" width="1781" height="2066" frameX="-354" frameY="0" frameWidth="2160" frameHeight="2160" />
+<SubTexture name="robinscrap right0000" x="4934" y="4060" width="1464" height="1859" frameX="-636" frameY="-146" frameWidth="2160" frameHeight="2160" />
+<SubTexture name="robinscrap right0001" x="3580" y="0" width="2039" height="2022" frameX="-36" frameY="-138" frameWidth="2160" frameHeight="2160" />
+<SubTexture name="robinscrap right0002" x="8304" y="0" width="1861" height="1728" frameX="-101" frameY="-243" frameWidth="2160" frameHeight="2160" />
+<SubTexture name="robinscrap cry0000" x="0" y="5988" width="1518" height="1780" frameX="-337" frameY="-199" frameWidth="2160" frameHeight="2160" />
+<SubTexture name="robinscrap cry0001" x="1714" y="2066" width="1716" height="1977" frameX="-177" frameY="-127" frameWidth="2160" frameHeight="2160" />
+<SubTexture name="robinscrap cry0002" x="6681" y="1841" width="1418" height="1833" frameX="-394" frameY="-146" frameWidth="2160" frameHeight="2160" />
+<SubTexture name="robinscrap cry0003" x="1714" y="2066" width="1716" height="1977" frameX="-177" frameY="-127" frameWidth="2160" frameHeight="2160" />
+</TextureAtlas>

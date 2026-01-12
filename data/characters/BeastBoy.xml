@@ -1,0 +1,8 @@
+<!DOCTYPE codename-engine-character>
+<character sprite="BeastBoy" scale="0.5" flipX="true" camx="-300" camy="-100" isPlayer="true" icon="BeastBoy" imagePath="BeastBoy.png">
+	<anim name="idle" anim="BeastBoy idle" x="0" y="0" fps="12" loop="false"/>
+	<anim name="singLEFT" anim="BeastBoy left" x="0" y="0" fps="12" loop="false"/>
+	<anim name="singUP" anim="BeastBoy up" x="0" y="0" fps="12" loop="false"/>
+	<anim name="singDOWN" anim="BeastBoy down" x="0" y="0" fps="12" loop="false"/>
+	<anim name="singRIGHT" anim="BeastBoy right" x="0" y="0" fps="12" loop="false"/>
+</character>

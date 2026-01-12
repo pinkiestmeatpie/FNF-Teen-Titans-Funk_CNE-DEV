@@ -1,0 +1,8 @@
+<!DOCTYPE codename-engine-character>
+<character x="-250" y="-30" sprite="cyborgdb" scale="0.8" flipX="true" isPlayer="true" icon="Cyborg" color="#FF643B" holdTime="8" imagePath="Robin.png">
+	<anim name="idle" anim="cyborgdb idle" x="0" y="0" fps="12" loop="false"/>
+	<anim name="singLEFT" anim="robinnew left" x="0" y="0" fps="24" loop="false"/>
+	<anim name="singUP" anim="robinnew up" x="0" y="0" fps="24" loop="false"/>
+	<anim name="singDOWN" anim="robinnew down" x="0" y="0" fps="24" loop="false"/>
+	<anim name="singRIGHT" anim="robinnew right" x="0" y="0" fps="24" loop="false"/>
+</character>

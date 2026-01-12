@@ -1,0 +1,16 @@
+{
+	"beatsPerMeasure": 4,
+	"opponentModeAllowed": true,
+	"coopAllowed": true,
+	"stepsPerBeat": 4,
+	"bpm": 180,
+	"difficulties": [
+		"Hard"
+	],
+	"needsVoices": true,
+	"parsedColor": -63384,
+	"displayName": "HYPNOTIZED",
+	"icon": "Icon",
+	"name": "HYPNOTIZED",
+	"color": "#FF0868"
+}

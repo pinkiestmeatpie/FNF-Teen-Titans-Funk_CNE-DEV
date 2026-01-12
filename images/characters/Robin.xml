@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="Robin.png">
+<SubTexture name="Robin left0000" x="1623" y="2306" width="591" height="1131" frameX="-931" frameY="-325" frameWidth="2666" frameHeight="1500" />
+<SubTexture name="Robin left0001" x="0" y="0" width="574" height="1131" frameX="-952" frameY="-325" frameWidth="2666" frameHeight="1500" />
+<SubTexture name="Robin up0000" x="574" y="0" width="604" height="1113" frameX="-931" frameY="-343" frameWidth="2666" frameHeight="1500" />
+<SubTexture name="Robin up0001" x="1178" y="0" width="601" height="1109" frameX="-935" frameY="-347" frameWidth="2666" frameHeight="1500" />
+<SubTexture name="Robin down0000" x="1779" y="0" width="537" height="1119" frameX="-998" frameY="-337" frameWidth="2666" frameHeight="1500" />
+<SubTexture name="Robin down0001" x="2316" y="0" width="563" height="1141" frameX="-966" frameY="-315" frameWidth="2666" frameHeight="1500" />
+<SubTexture name="Robin alt0000" x="0" y="1141" width="464" height="1165" frameX="-1058" frameY="-291" frameWidth="2666" frameHeight="1500" />
+<SubTexture name="Robin alt0001" x="464" y="1141" width="479" height="1164" frameX="-1061" frameY="-292" frameWidth="2666" frameHeight="1500" />
+<SubTexture name="Robin right0000" x="943" y="1141" width="640" height="1115" frameX="-911" frameY="-341" frameWidth="2666" frameHeight="1500" />
+<SubTexture name="Robin right0001" x="1583" y="1141" width="631" height="1115" frameX="-894" frameY="-341" frameWidth="2666" frameHeight="1500" />
+<SubTexture name="Robin idle0000" x="2214" y="1141" width="521" height="1120" frameX="-973" frameY="-336" frameWidth="2666" frameHeight="1500" />
+<SubTexture name="Robin idle0001" x="0" y="2306" width="537" height="1131" frameX="-957" frameY="-325" frameWidth="2666" frameHeight="1500" />
+<SubTexture name="Robin idle0002" x="537" y="2306" width="542" height="1135" frameX="-952" frameY="-321" frameWidth="2666" frameHeight="1500" />
+<SubTexture name="Robin idle0003" x="1079" y="2306" width="544" height="1136" frameX="-950" frameY="-320" frameWidth="2666" frameHeight="1500" />
+<SubTexture name="Robin idle0004" x="537" y="2306" width="542" height="1135" frameX="-952" frameY="-321" frameWidth="2666" frameHeight="1500" />
+<SubTexture name="Robin idle0005" x="0" y="2306" width="537" height="1131" frameX="-957" frameY="-325" frameWidth="2666" frameHeight="1500" />
+<SubTexture name="Robin idle0006" x="0" y="2306" width="537" height="1131" frameX="-957" frameY="-325" frameWidth="2666" frameHeight="1500" />
+<SubTexture name="Robin idle0007" x="0" y="2306" width="537" height="1131" frameX="-957" frameY="-325" frameWidth="2666" frameHeight="1500" />
+<SubTexture name="Robin idle0008" x="0" y="2306" width="537" height="1131" frameX="-957" frameY="-325" frameWidth="2666" frameHeight="1500" />
+<SubTexture name="Robin idle0009" x="0" y="2306" width="537" height="1131" frameX="-957" frameY="-325" frameWidth="2666" frameHeight="1500" />
+</TextureAtlas>

@@ -1,0 +1,14 @@
+{
+    "params": [
+        {
+            "name": "Camera Zoom",
+            "type": "Float(0.01, 2, 0.001, 3)",
+            "defaultValue": 0.9
+        },
+        {
+            "name": "HUD Zoom",
+            "type": "Float(0.01, 2, 0.001, 3)",
+            "defaultValue": 1
+        }
+    ]
+}

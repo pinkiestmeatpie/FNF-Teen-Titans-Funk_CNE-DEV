@@ -1,0 +1,5 @@
+<!DOCTYPE codename-engine-character>
+<character x="0" y="100" sprite="silkieGf" antialiasing="false" camx="0" camy="0" icon="silkie" color="#FFFFFF">
+	<anim name="danceLeft" anim="silkieGf idle-left" x="0" y="0" fps="24" loop="false"/>
+	<anim name="danceRight" anim="silkieGf idle-right" x="0" y="0" fps="24" loop="false"/>
+</character>

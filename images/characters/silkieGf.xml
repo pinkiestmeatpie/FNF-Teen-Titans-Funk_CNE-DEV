@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="silkieGf.png">
+<SubTexture name="silkieGf idle-left0000" x="2796" y="1005" width="699" height="499" frameX="-2" frameY="-6" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-left0001" x="703" y="2523" width="703" height="501" frameX="0" frameY="-4" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-left0002" x="0" y="2020" width="703" height="503" frameX="0" frameY="-2" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-left0003" x="703" y="2020" width="699" height="503" frameX="-2" frameY="-2" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-left0004" x="2097" y="505" width="699" height="504" frameX="-2" frameY="-1" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-left0005" x="0" y="0" width="699" height="505" frameX="-2" frameY="0" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-left0006" x="699" y="0" width="699" height="505" frameX="-2" frameY="0" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-left0007" x="0" y="505" width="699" height="505" frameX="-2" frameY="0" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-left0008" x="699" y="505" width="699" height="505" frameX="-2" frameY="0" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-left0009" x="1398" y="0" width="699" height="505" frameX="-2" frameY="0" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-left0010" x="1398" y="505" width="699" height="505" frameX="-2" frameY="0" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-left0011" x="0" y="1010" width="699" height="505" frameX="-2" frameY="0" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-left0012" x="2097" y="1009" width="699" height="504" frameX="-2" frameY="-1" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-left0013" x="1402" y="2020" width="699" height="503" frameX="-2" frameY="-2" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-left0014" x="2796" y="0" width="699" height="503" frameX="-2" frameY="-2" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-left0015" x="2796" y="503" width="699" height="502" frameX="-2" frameY="-3" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-left0016" x="1406" y="2523" width="703" height="500" frameX="0" frameY="-5" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-right0000" x="0" y="2523" width="703" height="502" frameX="0" frameY="-3" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-right0001" x="2097" y="1513" width="699" height="504" frameX="-2" frameY="-1" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-right0002" x="699" y="1010" width="699" height="505" frameX="-2" frameY="0" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-right0003" x="1398" y="1010" width="699" height="505" frameX="-2" frameY="0" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-right0004" x="0" y="1515" width="699" height="505" frameX="-2" frameY="0" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-right0005" x="699" y="1515" width="699" height="505" frameX="-2" frameY="0" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-right0006" x="1398" y="1515" width="699" height="505" frameX="-2" frameY="0" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-right0007" x="2097" y="0" width="699" height="505" frameX="-2" frameY="0" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-right0008" x="2097" y="0" width="699" height="505" frameX="-2" frameY="0" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-right0009" x="2097" y="0" width="699" height="505" frameX="-2" frameY="0" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-right0010" x="2097" y="0" width="699" height="505" frameX="-2" frameY="0" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-right0011" x="2097" y="0" width="699" height="505" frameX="-2" frameY="0" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-right0012" x="2097" y="0" width="699" height="505" frameX="-2" frameY="0" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-right0013" x="2097" y="0" width="699" height="505" frameX="-2" frameY="0" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-right0014" x="2097" y="0" width="699" height="505" frameX="-2" frameY="0" frameWidth="703" frameHeight="505" />
+<SubTexture name="silkieGf idle-right0015" x="2097" y="0" width="699" height="505" frameX="-2" frameY="0" frameWidth="703" frameHeight="505" />
+</TextureAtlas>

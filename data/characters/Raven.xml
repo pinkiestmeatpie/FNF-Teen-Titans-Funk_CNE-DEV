@@ -1,0 +1,8 @@
+<!DOCTYPE codename-engine-character>
+<character sprite="Raven" icon="Raven" imagePath="Raven.png">
+	<anim name="idle" anim="Raven idle" x="0" y="0" fps="12" loop="false"/>
+	<anim name="singLEFT" anim="Raven left" x="0" y="0" fps="12" loop="false"/>
+	<anim name="singUP" anim="Raven up" x="0" y="0" fps="12" loop="false"/>
+	<anim name="singDOWN" anim="Raven down" x="0" y="0" fps="12" loop="false"/>
+	<anim name="singRIGHT" anim="Raven right" x="0" y="0" fps="12" loop="false"/>
+</character>

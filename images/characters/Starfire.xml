@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="Starfire.png">
+<SubTexture name="Starfire left0000" x="291" y="674" width="462" height="592" frameX="-60" frameY="-82" frameWidth="522" frameHeight="697" />
+<SubTexture name="Starfire left0001" x="291" y="674" width="462" height="592" frameX="-60" frameY="-82" frameWidth="522" frameHeight="697" />
+<SubTexture name="Starfire up0000" x="0" y="0" width="316" height="674" frameX="-153" frameY="0" frameWidth="522" frameHeight="697" />
+<SubTexture name="Starfire up0001" x="316" y="0" width="316" height="674" frameX="-153" frameY="0" frameWidth="522" frameHeight="697" />
+<SubTexture name="Starfire up0002" x="316" y="0" width="316" height="674" frameX="-153" frameY="0" frameWidth="522" frameHeight="697" />
+<SubTexture name="Starfire down0000" x="753" y="674" width="303" height="572" frameX="-106" frameY="-102" frameWidth="522" frameHeight="697" />
+<SubTexture name="Starfire down0001" x="1056" y="674" width="303" height="572" frameX="-106" frameY="-102" frameWidth="522" frameHeight="697" />
+<SubTexture name="Starfire down0002" x="1382" y="0" width="303" height="572" frameX="-106" frameY="-102" frameWidth="522" frameHeight="697" />
+<SubTexture name="Starfire down0003" x="1382" y="572" width="303" height="572" frameX="-106" frameY="-102" frameWidth="522" frameHeight="697" />
+<SubTexture name="Starfire right0000" x="632" y="0" width="375" height="639" frameX="-115" frameY="-35" frameWidth="522" frameHeight="697" />
+<SubTexture name="Starfire right0001" x="632" y="0" width="375" height="639" frameX="-115" frameY="-35" frameWidth="522" frameHeight="697" />
+<SubTexture name="Starfire right0002" x="1007" y="0" width="375" height="639" frameX="-115" frameY="-35" frameWidth="522" frameHeight="697" />
+<SubTexture name="Starfire right0003" x="1007" y="0" width="375" height="639" frameX="-115" frameY="-35" frameWidth="522" frameHeight="697" />
+<SubTexture name="Starfire idle0000" x="0" y="674" width="291" height="634" frameX="-164" frameY="-40" frameWidth="522" frameHeight="697" />
+<SubTexture name="Starfire idle0001" x="0" y="674" width="291" height="634" frameX="-164" frameY="-40" frameWidth="522" frameHeight="697" />
+<SubTexture name="Starfire idle0002" x="0" y="674" width="291" height="634" frameX="-164" frameY="-40" frameWidth="522" frameHeight="697" />
+<SubTexture name="Starfire idle0003" x="0" y="674" width="291" height="634" frameX="-164" frameY="-40" frameWidth="522" frameHeight="697" />
+<SubTexture name="Starfire idle0004" x="0" y="674" width="291" height="634" frameX="-164" frameY="-40" frameWidth="522" frameHeight="697" />
+<SubTexture name="Starfire idle0005" x="0" y="674" width="291" height="634" frameX="-164" frameY="-40" frameWidth="522" frameHeight="697" />
+<SubTexture name="Starfire idle0006" x="0" y="674" width="291" height="634" frameX="-164" frameY="-40" frameWidth="522" frameHeight="697" />
+<SubTexture name="Starfire idle0007" x="0" y="674" width="291" height="634" frameX="-164" frameY="-40" frameWidth="522" frameHeight="697" />
+</TextureAtlas>

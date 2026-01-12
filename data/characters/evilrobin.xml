@@ -1,0 +1,4 @@
+<!DOCTYPE codename-engine-character>
+<character x="-200" y="30" sprite="evilrobin" scale="0.72" camy="-60" icon="Robin" color="#FF643B" imagePath="Robin.png">
+	<anim name="idle" anim="evilrobin idle" x="0" y="-2" fps="12" loop="true"/>
+</character>

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="robindb.png">
+<SubTexture name="robindb idle0000" x="2063" y="0" width="669" height="1264" frameX="0" frameY="-14" frameWidth="709" frameHeight="1278" />
+<SubTexture name="robindb idle0001" x="1383" y="0" width="680" height="1271" frameX="-10" frameY="-7" frameWidth="709" frameHeight="1278" />
+<SubTexture name="robindb idle0002" x="693" y="0" width="690" height="1276" frameX="-14" frameY="-2" frameWidth="709" frameHeight="1278" />
+<SubTexture name="robindb idle0003" x="0" y="0" width="693" height="1278" frameX="-16" frameY="0" frameWidth="709" frameHeight="1278" />
+</TextureAtlas>

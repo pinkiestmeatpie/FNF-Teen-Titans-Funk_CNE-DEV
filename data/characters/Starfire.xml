@@ -1,0 +1,8 @@
+<!DOCTYPE codename-engine-character>
+<character y="100" sprite="Starfire" scale="1" flipX="true" isPlayer="true" icon="Starfire" color="#ea1571ff" holdTime="8" imagePath="Starfire.png">
+    <anim name="idle" anim="Starfire idle" x="0" y="0" fps="12" loop="false"/>
+	<anim name="singLEFT" anim="Starfire left" x="0" y="0" fps="24" loop="false"/>
+	<anim name="singUP" anim="Starfire up" x="0" y="0" fps="24" loop="false" indices="0..0"/>
+	<anim name="singDOWN" anim="Starfire down" x="0" y="0" fps="24" indices="0..0" loop="false"/>
+	<anim name="singRIGHT" anim="Starfire right" x="0" y="0" fps="24" loop="false" indices="0..0"/>
+</character>

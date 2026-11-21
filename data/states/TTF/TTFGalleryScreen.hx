@@ -1,3 +1,6 @@
+import flixel.FlxSprite;
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
 import flixel.addons.display.FlxBackdrop;
 // Gallery screen - the images here are placeholders and can be replaced freely.
 import funkin.backend.Paths;

@@ -1,3 +1,6 @@
+import flixel.FlxSprite;
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
 // Credits layout template. Replace the generic roles with confirmed names and links.
 import funkin.backend.Paths;
 import funkin.menus.MainMenuState;

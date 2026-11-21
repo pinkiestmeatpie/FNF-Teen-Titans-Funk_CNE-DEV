@@ -9,12 +9,10 @@ import funkin.backend.system.Conductor;
 
 var ttfStaff:FlxSprite;
 var ttfClock:FlxText;
-var ttfLogo:FlxText;
 var ttfRating:FlxText;
 var ttfRatingTimer:Float = 0;
 
 function postCreate() {
-    // Compact title strip at the top.
     var topStrip = new FlxSprite(0, 0).makeGraphic(FlxG.width, 48, 0xB8000000);
     topStrip.scrollFactor.set();
     topStrip.cameras = [camHUD];
@@ -25,7 +23,7 @@ function postCreate() {
     topRule.cameras = [camHUD];
     add(topRule);
 
-    ttfLogo = new FlxText(22, 3, 240, 'TTF');
+    var ttfLogo = new FlxText(22, 3, 240, 'TTF');
     ttfLogo.setFormat(Paths.font('ttg.ttf'), 38, 0xFF20B8D3, 'left');
     ttfLogo.scrollFactor.set();
     ttfLogo.cameras = [camHUD];
@@ -48,24 +46,22 @@ function postCreate() {
     songText.cameras = [camHUD];
     add(songText);
 
-    // Existing Robin staff asset is the health bar frame from the storyboard.
+    // Actual staff image found in images/game/ttghealthbar.png.
     ttfStaff = new FlxSprite().loadGraphic(Paths.image('game/ttghealthbar'));
-    ttfStaff.setGraphicSize(930);
+    ttfStaff.setGraphicSize(FlxG.width);
     ttfStaff.updateHitbox();
     ttfStaff.x = (FlxG.width - ttfStaff.width) * 0.5;
-    ttfStaff.y = FlxG.height - ttfStaff.height - 16;
+    ttfStaff.y = FlxG.height - ttfStaff.height - 8;
     ttfStaff.scrollFactor.set();
     ttfStaff.cameras = [camHUD];
 
     if (healthBarBG != null) healthBarBG.visible = false;
 
-    // Reposition the actual engine health bar into the staff's open centre.
+    // Keep the native health bar's size and binding; only position/recolour it inside the staff.
     if (healthBar != null) {
         remove(healthBar, false);
-        healthBar.setGraphicSize(565, 17);
-        healthBar.updateHitbox();
-        healthBar.x = ttfStaff.x + 183;
-        healthBar.y = ttfStaff.y + 67;
+        healthBar.x = (FlxG.width - healthBar.width) * 0.5;
+        healthBar.y = ttfStaff.y + (ttfStaff.height - healthBar.height) * 0.5;
         healthBar.createFilledBar(0xFFE34F60, 0xFF70D2BF);
         healthBar.scrollFactor.set();
         healthBar.cameras = [camHUD];
@@ -76,24 +72,23 @@ function postCreate() {
         add(ttfStaff);
     }
 
-    // Keep the real player/opponent icons, but move them to the staff handles.
+    // Keep CNE's native character icons on the two staff handles.
     if (iconP1 != null) {
-        iconP1.setGraphicSize(64, 64);
+        iconP1.setGraphicSize(66, 66);
         iconP1.updateHitbox();
-        iconP1.x = ttfStaff.x - 2;
+        iconP1.x = ttfStaff.x + 5;
         iconP1.y = ttfStaff.y + (ttfStaff.height - iconP1.height) * 0.5;
         iconP1.cameras = [camHUD];
     }
     if (iconP2 != null) {
-        iconP2.setGraphicSize(64, 64);
+        iconP2.setGraphicSize(66, 66);
         iconP2.updateHitbox();
-        iconP2.x = ttfStaff.x + ttfStaff.width - iconP2.width + 2;
+        iconP2.x = ttfStaff.x + ttfStaff.width - iconP2.width - 5;
         iconP2.y = ttfStaff.y + (ttfStaff.height - iconP2.height) * 0.5;
         iconP2.cameras = [camHUD];
     }
 
-    // Rating callout above the staff, using the real rating name from CNE's note event.
-    ttfRating = new FlxText(0, FlxG.height - 155, FlxG.width, '');
+    ttfRating = new FlxText(0, ttfStaff.y - 58, FlxG.width, '');
     ttfRating.setFormat(Paths.font('ttg.ttf'), 42, 0xFFFFFF36, 'center');
     ttfRating.alignment = 'center';
     ttfRating.scrollFactor.set();
@@ -105,10 +100,11 @@ function postCreate() {
 function onNoteHit(event) {
     if (!event.player) return;
 
-    // Replace only the default rating sprite; engine accuracy and scoring stay untouched.
+    // Replace the default rating sprite only; scoring and accuracy remain engine-managed.
     event.displayRating = false;
-    ttfRating.text = Std.string(event.rating).toUpperCase() + '!';
-    ttfRating.color = switch (Std.string(event.rating).toLowerCase()) {
+    var ratingName = event.rating == null ? '' : Std.string(event.rating).toLowerCase();
+    ttfRating.text = ratingName.toUpperCase() + '!';
+    ttfRating.color = switch (ratingName) {
         case 'sick': 0xFF62D9CC;
         case 'good': 0xFFB9E86B;
         case 'bad': 0xFFFFB347;
@@ -117,7 +113,7 @@ function onNoteHit(event) {
     };
     ttfRating.visible = true;
     ttfRating.alpha = 1;
-    ttfRating.y = FlxG.height - 155;
+    ttfRating.y = ttfStaff.y - 58;
     ttfRatingTimer = 0.55;
 }
 
@@ -126,7 +122,7 @@ function onPlayerMiss(event) {
     ttfRating.color = 0xFFFF6575;
     ttfRating.visible = true;
     ttfRating.alpha = 1;
-    ttfRating.y = FlxG.height - 155;
+    ttfRating.y = ttfStaff.y - 58;
     ttfRatingTimer = 0.55;
 }
 

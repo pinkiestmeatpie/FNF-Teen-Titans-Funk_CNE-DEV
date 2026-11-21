@@ -4,86 +4,76 @@ import flixel.util.FlxColor;
 import funkin.backend.scripting.ModState;
 import funkin.backend.Paths;
 
-// Comic-panel cold open from the supplied menu storyboard sketch.
+// Opening comic panel shown before the title screen.
 var pulse:Float = 0;
-var pressText:FlxText;
+var prompt:FlxText;
+var caption:FlxText;
 
 function create() {
-    FlxG.camera.bgColor = 0xFFF7F4EE;
+    FlxG.camera.bgColor = 0xFFF5F1EA;
 
-    var paper = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFFF7F4EE);
+    var paper = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFFF5F1EA);
     paper.scrollFactor.set();
     add(paper);
 
-    var border = new FlxSprite(42, 62).makeGraphic(1196, 590, 0xFFFFAAB5);
-    border.scrollFactor.set();
-    add(border);
+    var frame = new FlxSprite(44, 70).makeGraphic(FlxG.width - 88, FlxG.height - 145, 0xFFFFA9B5);
+    frame.scrollFactor.set();
+    add(frame);
 
-    var panel = new FlxSprite(54, 74).makeGraphic(1172, 566, 0xFF15151B);
-    panel.scrollFactor.set();
-    add(panel);
+    var inset = new FlxSprite(56, 82).makeGraphic(FlxG.width - 112, FlxG.height - 169, 0xFF181821);
+    inset.scrollFactor.set();
+    add(inset);
 
-    var tag = new FlxText(82, 88, 360, 'TEEN TITANS // OPENING SCENE');
-    tag.setFormat(Paths.font('ttg.ttf'), 25, 0xFFFFE35C, 'left');
+    // Scene plate: use the mod's own stage art, not the unrelated old menu theme.
+    var scene = new FlxSprite().loadGraphic(Paths.image('stages/warehouse/bg'));
+    scene.setGraphicSize(FlxG.width - 142, FlxG.height - 245);
+    scene.updateHitbox();
+    scene.x = 71;
+    scene.y = 115;
+    scene.scrollFactor.set();
+    scene.antialiasing = true;
+    add(scene);
+
+    var shade = new FlxSprite(71, 115).makeGraphic(FlxG.width - 142, FlxG.height - 245, 0x66000000);
+    shade.scrollFactor.set();
+    add(shade);
+
+    var tag = new FlxText(88, 94, 500, 'TEEN TITANS FUNK!  //  INTRO');
+    tag.setFormat(Paths.font('ttg.ttf'), 27, 0xFFFFD52F, 'left');
     tag.scrollFactor.set();
     add(tag);
 
-    // Two storyboard panels are intentionally simple stand-ins for the final drawings.
-    var leftPanel = new FlxSprite(92, 145).makeGraphic(510, 390, 0xFFE8E2D9);
-    leftPanel.scrollFactor.set();
-    add(leftPanel);
+    var speech = new FlxSprite(FlxG.width - 465, 155).makeGraphic(340, 105, 0xFFF8F5EE);
+    speech.angle = 2;
+    speech.scrollFactor.set();
+    add(speech);
 
-    var rightPanel = new FlxSprite(678, 145).makeGraphic(510, 390, 0xFFD7E8EE);
-    rightPanel.scrollFactor.set();
-    add(rightPanel);
+    var speechText = new FlxText(FlxG.width - 452, 180, 310, 'TITANS, GO!');
+    speechText.setFormat(Paths.font('ttg.ttf'), 38, 0xFF17171D, 'center');
+    speechText.alignment = 'center';
+    speechText.scrollFactor.set();
+    add(speechText);
 
-    var leftSky = new FlxSprite(112, 165).makeGraphic(470, 160, 0xFFB5D5DF);
-    leftSky.scrollFactor.set();
-    add(leftSky);
+    var lowerPanel = new FlxSprite(71, FlxG.height - 120).makeGraphic(FlxG.width - 142, 48, 0xF20A0A10);
+    lowerPanel.scrollFactor.set();
+    add(lowerPanel);
 
-    var leftShadow = new FlxSprite(180, 300).makeGraphic(180, 185, 0xFF25232A);
-    leftShadow.angle = -8;
-    leftShadow.scrollFactor.set();
-    add(leftShadow);
+    caption = new FlxText(95, FlxG.height - 114, FlxG.width - 190, 'THE CITY IS IN TROUBLE. THE TITANS ARE ON THEIR WAY.');
+    caption.setFormat(Paths.font('ttg.ttf'), 24, FlxColor.WHITE, 'center');
+    caption.alignment = 'center';
+    caption.scrollFactor.set();
+    add(caption);
 
-    var leftHero = new FlxText(130, 340, 470, 'ROBIN\n[POSE PLACEHOLDER]');
-    leftHero.setFormat(Paths.font('ttg.ttf'), 34, 0xFF25232A, 'center');
-    leftHero.alignment = 'center';
-    leftHero.scrollFactor.set();
-    add(leftHero);
-
-    var rightHero = new FlxText(700, 270, 460, 'TITAN\n[POSE PLACEHOLDER]');
-    rightHero.setFormat(Paths.font('ttg.ttf'), 40, 0xFF172C3A, 'center');
-    rightHero.alignment = 'center';
-    rightHero.scrollFactor.set();
-    add(rightHero);
-
-    var bubble = new FlxSprite(760, 175).makeGraphic(320, 82, 0xFFFFFFFF);
-    bubble.scrollFactor.set();
-    add(bubble);
-
-    var bubbleText = new FlxText(770, 190, 300, 'TITANS, GO!');
-    bubbleText.setFormat(Paths.font('ttg.ttf'), 32, 0xFF15151B, 'center');
-    bubbleText.alignment = 'center';
-    bubbleText.scrollFactor.set();
-    add(bubbleText);
-
-    pressText = new FlxText(0, 565, FlxG.width, 'PRESS ENTER');
-    pressText.setFormat(Paths.font('ttg.ttf'), 30, FlxColor.WHITE, 'center');
-    pressText.alignment = 'center';
-    pressText.scrollFactor.set();
-    add(pressText);
-
-    var credit = new FlxText(0, 615, FlxG.width, 'A TEEN TITANS FUNK! MOD');
-    credit.setFormat(Paths.font('comm.ttf'), 16, 0xFFFFE35C, 'center');
-    credit.alignment = 'center';
-    credit.scrollFactor.set();
-    add(credit);
+    prompt = new FlxText(0, FlxG.height - 58, FlxG.width, 'PRESS ENTER TO CONTINUE');
+    prompt.setFormat(Paths.font('ttg.ttf'), 22, 0xFF20202A, 'center');
+    prompt.alignment = 'center';
+    prompt.scrollFactor.set();
+    add(prompt);
 }
 
 function update(elapsed:Float) {
     pulse += elapsed * 4;
-    pressText.alpha = 0.58 + (Math.sin(pulse) * 0.32);
+    prompt.alpha = 0.58 + Math.sin(pulse) * 0.32;
 
     if (controls.ACCEPT) {
         FlxG.sound.play(Paths.sound('menu/confirm'), 0.7);

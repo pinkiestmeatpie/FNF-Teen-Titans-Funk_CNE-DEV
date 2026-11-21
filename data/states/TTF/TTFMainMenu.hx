@@ -21,9 +21,10 @@ import funkin.backend.shaders.CustomShader;
 import Date;
 
 var canAccessDebugMenus:Bool = true;
-var options:Array<String> = ['story mode', 'freeplay', 'options', 'credits'];
+var options:Array<String> = ['freeplay', 'options', 'credits', 'gallery'];
 var charList:Array<String> = ['bf', 'gf', 'pico'];
 
+var menuItems:FlxSpriteGroup;
 var transitioning:Bool = false;
 var isZoomLerp:Bool = false;
 var popupAppear:Bool = false;
@@ -107,17 +108,15 @@ function create() {
 	add(lineTop);
 
 	for (i=>option in options) {
-		var menuItem:FlxSprite = new FlxSprite(0, 60 + (i * 160));
-		menuItem.frames = Paths.getFrames('menus/mainmenu/' + option);
-		menuItem.animation.addByPrefix('idle', option + " basic", 24);
-		menuItem.animation.addByPrefix('selected', option + " white", 24);
-		menuItem.animation.play('idle');
-		menuItem.scale.set(0.9, 0.9);
+		// Text menu items keep the menu usable while final button art is being made.
+		var menuItem:FlxText = new FlxText(0, 60 + (i * 160), 540, option.toUpperCase());
+		menuItem.setFormat(Paths.font('ttg.ttf'), 62, FlxColor.WHITE, 'center');
+		menuItem.alignment = 'center';
 		menuItem.ID = i;
 		menuItem.screenCenter(FlxAxes.X);
-		menuItems.add(menuItem);
 		menuItem.scrollFactor.set();
 		menuItem.antialiasing = true;
+		menuItems.add(menuItem);
 	}
 	changeItem(0);
 
@@ -214,7 +213,11 @@ function update(dt) {
 				openSubState(new EditorPicker());
 			}
 
-			if (controls.UP_P) changeItem(-1);
+			if (FlxG.keys.justPressed.H) {
+				transitioning = true;
+				FlxG.switchState(new ModState("TTF/TTFSecretScreen"));
+			}
+			else if (controls.UP_P) changeItem(-1);
 			else if (controls.DOWN_P) changeItem(1);
 			else if (FlxG.mouse.wheel != 0) changeItem(-FlxG.mouse.wheel);
 
@@ -233,12 +236,12 @@ function update(dt) {
 
 	curSelectLerp = lerp(curSelectLerp, curSelected, 0.15);
 	menuItems.forEach((spr:FlxSprite) -> {
-		var addY = 230;
+		var addY = 145;
 		spr.updateHitbox();
 		spr.screenCenter();
-		spr.x += (Math.sin(spr.ID - curSelectLerp - 1.5) * 200) - 20;
+		spr.x += (Math.sin(spr.ID - curSelectLerp - 1.5) * 24) - 12;
 		spr.y += (spr.ID * addY) - (curSelectLerp * addY);
-		spr.angle = (-Math.sin(spr.ID - curSelectLerp) * 22);
+		spr.angle = (-Math.sin(spr.ID - curSelectLerp) * 3);
 	});
 }
 function beatHit() FlxG.camera.zoom += 0.02;
@@ -283,7 +286,8 @@ function selectItem(item) {
 			var state;
 			switch (item) {
 				case 'freeplay': state = new FreeplayState();
-				case 'credits':state = new CreditsMain();
+				case 'credits': state = new ModState('TTF/TTFCreditsScreen');
+				case 'gallery': state = new ModState('TTF/TTFGalleryScreen');
 				case 'options': state = new OptionsMenu();
 				default: state = new MainMenuState();
 			}
@@ -324,5 +328,11 @@ function changeItem(add:Int) {
 	curSelected = FlxMath.wrap(curSelected + add, 0, menuItems.length - 1);
 	if (add != 0) FlxG.sound.play(Paths.sound('menu/scroll'), 0.7);
 
-	menuItems.forEach((spr:FlxSprite) -> spr.animation.play(spr.ID == curSelected ? 'selected' : 'idle'));
+	menuItems.forEach((spr:FlxSprite) -> {
+		var label:FlxText = cast spr;
+		var selected:Bool = spr.ID == curSelected;
+		label.text = (selected ? "> " : "  ") + options[spr.ID].toUpperCase();
+		label.color = selected ? FlxColor.YELLOW : FlxColor.WHITE;
+		label.alpha = selected ? 1 : 0.68;
+	});
 }

@@ -1,328 +1,169 @@
-import flixel.effects.FlxFlicker;
-import flixel.group.FlxSpriteGroup;
-import flixel.text.FlxText.FlxTextBorderStyle;
-import flixel.tweens.FlxTween.FlxTweenType;
-import flixel.addons.display.FlxBackdrop;
-import openfl.display.BlendMode;
+import flixel.FlxSprite;
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
+import flixel.util.FlxSpriteUtil;
+import funkin.backend.scripting.ModState;
+import funkin.backend.Paths;
+import funkin.game.PlayState;
 
-import funkin.backend.shaders.FunkinShader;
-import funkin.backend.utils.DiscordUtil;
-import funkin.backend.MusicBeatState;
-import funkin.backend.MusicBeatTransition;
-import funkin.editors.EditorPicker;
-import funkin.menus.credits.CreditsMain;
-import funkin.menus.FreeplayState;
-import funkin.menus.MainMenuState;
-import funkin.menus.ModSwitchMenu;
-import funkin.menus.TitleState;
-import funkin.options.OptionsMenu;
-import funkin.backend.shaders.CustomShader;
-
-import Date;
-
-var canAccessDebugMenus:Bool = true;
-var options:Array<String> = ['story mode', 'freeplay', 'options', 'credits'];
-var charList:Array<String> = ['bf', 'gf', 'pico'];
-
-var transitioning:Bool = false;
-var isZoomLerp:Bool = false;
-var popupAppear:Bool = false;
+var options:Array<String> = ['FREEPLAY', 'OPTIONS', 'CREDITS', 'GALLERY'];
+var items:Array<FlxText> = [];
 var curSelected:Int = 0;
-var curSelectLerp:Float = 0;
-
-var adjustColorShader:CustomShader;
-
-var bg:FunkinSprite;
-var chessBG:FlxBackdrop;
-var lineBottom:FlxSprite;
-var lineTop:FlxSprite;
-var bgChar:FlxSprite;
-var curChar:String;
-
-// popup info
-var blackBoxTitle:FlxSprite;
-var blackBox:FlxSprite;
-var blackTextInfo:FlxText;
-var blackText:FlxText;
-var popupBg:FlxSprite;
-
-// bisma stuff
-var bismaSprite:FlxSprite;
-var showBisma:Bool = false;
+var transitioning:Bool = false;
+var pulse:Float = 0;
+var statusText:FlxText;
+var communicator:FlxSprite;
 
 function create() {
-	DiscordUtil.changePresence("In the Menus", null);
-	CoolUtil.playMenuSong();
+    FlxG.camera.bgColor = 0xFFF5F2EC;
+    CoolUtil.playMenuSong();
 
-	bg = new FunkinSprite().loadGraphic(Paths.image('menus/mainmenu/bgmenuRamadhan'));
-	bg.antialiasing = Options.antialiasing;
-	bg.scale.set(0.8, 0.8);
-	bg.updateHitbox();
-	bg.screenCenter();
-	bg.scrollFactor.set(0, 0.3);
-	add(bg);
+    // Faded scene backdrop from the mod's own stage art.
+    var scene = new FlxSprite().loadGraphic(Paths.image('stages/warehouse/bg'));
+    scene.setGraphicSize(FlxG.width, FlxG.height);
+    scene.updateHitbox();
+    scene.scrollFactor.set();
+    scene.alpha = 0.65;
+    add(scene);
 
-	adjustColorShader = new CustomShader('adjustColor');
-	adjustColorShader.hue = 0;
-	adjustColorShader.saturation = 0;
-	adjustColorShader.contrast = 0;
-	adjustColorShader.brightness = 0;
-	bg.shader = adjustColorShader;
+    var paper = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0x66F5F2EC);
+    paper.scrollFactor.set();
+    add(paper);
 
-	chessBG = new FlxBackdrop();
-	chessBG.loadGraphic(Paths.image('menus/chess'));
-	chessBG.blend = BlendMode.ADD;
-	chessBG.velocity.x = -30;
-	chessBG.velocity.y = 30;
-	chessBG.antialiasing = true;
-	chessBG.alpha = 0.1;
-	add(chessBG);
+    var frame = new FlxSprite(44, 80).makeGraphic(650, 560, 0xFFFFAAB5);
+    frame.scrollFactor.set();
+    add(frame);
 
-	curChar = charList[FlxG.random.int(0, charList.length-1)];
-	bgChar = new FlxSprite(1400, 80).loadGraphic(Paths.image('portrait/' + curChar + '-kosan'));
-	bgChar.antialiasing = Options.antialiasing;
-	bgChar.scale.set(0.69, 0.69);
-	bgChar.updateHitbox();
-	bgChar.scrollFactor.set(0, 0.5);
-	add(bgChar);
+    var menuPanel = new FlxSprite(56, 92).makeGraphic(626, 536, 0xFFFDFCF8);
+    menuPanel.scrollFactor.set();
+    add(menuPanel);
 
-	new FlxTimer().start(0.4, () -> bg.skew.set(FlxG.random.float(-0.5, 0.5), FlxG.random.float(-0.5, 0.5)), 0);
+    var label = new FlxText(92, 112, 500, 'MENU');
+    label.setFormat(Paths.font('comm.ttf'), 18, 0xFF7C7B80, 'left');
+    label.scrollFactor.set();
+    add(label);
 
-	add(menuItems = new FlxSpriteGroup());
+    // Large, unrotated parentheses form the curved brackets around the menu list.
+    var leftBracket = new FlxText(50, 163, 115, '(');
+    leftBracket.setFormat(Paths.font('ttg.ttf'), 395, 0xFF101015, 'center');
+    leftBracket.alignment = 'center';
+    leftBracket.scrollFactor.set();
+    add(leftBracket);
 
-	lineBottom = new FlxSprite().loadGraphic(Paths.image('menus/mainmenu/linebottom'));
-	lineBottom.antialiasing = Options.antialiasing;
-	lineBottom.scale.set(0.69, 0.69);
-	lineBottom.updateHitbox();
-	lineBottom.screenCenter();
-	lineBottom.scrollFactor.set();
-	add(lineBottom);
+    var rightBracket = new FlxText(574, 163, 115, ')');
+    rightBracket.setFormat(Paths.font('ttg.ttf'), 395, 0xFF101015, 'center');
+    rightBracket.alignment = 'center';
+    rightBracket.scrollFactor.set();
+    add(rightBracket);
 
-	lineTop = new FlxSprite().loadGraphic(Paths.image('menus/mainmenu/linetop'));
-	lineTop.antialiasing = Options.antialiasing;
-	lineTop.scale.set(0.69, 0.69);
-	lineTop.updateHitbox();
-	lineTop.screenCenter();
-	lineTop.scrollFactor.set();
-	add(lineTop);
+    for (i in 0...options.length) {
+        var item = new FlxText(140, 212 + (i * 83), 420, '');
+        item.setFormat(Paths.font('ttg.ttf'), 48, 0xFF101015, 'center');
+        item.alignment = 'center';
+        item.ID = i;
+        item.scrollFactor.set();
+        items.push(item);
+        add(item);
+    }
 
-	for (i=>option in options) {
-		var menuItem:FlxSprite = new FlxSprite(0, 60 + (i * 160));
-		menuItem.frames = Paths.getFrames('menus/mainmenu/' + option);
-		menuItem.animation.addByPrefix('idle', option + " basic", 24);
-		menuItem.animation.addByPrefix('selected', option + " white", 24);
-		menuItem.animation.play('idle');
-		menuItem.scale.set(0.9, 0.9);
-		menuItem.ID = i;
-		menuItem.screenCenter(FlxAxes.X);
-		menuItems.add(menuItem);
-		menuItem.scrollFactor.set();
-		menuItem.antialiasing = true;
-	}
-	changeItem(0);
+    // Round communicator: yellow casing, black face, green side details.
+    communicator = new FlxSprite(825, 220).makeGraphic(218, 218, FlxColor.TRANSPARENT, true);
+    FlxSpriteUtil.drawCircle(communicator, 109, 109, 105, 0xFFFFD52F);
+    FlxSpriteUtil.drawCircle(communicator, 109, 109, 91, 0xFF111116);
+    FlxSpriteUtil.drawCircle(communicator, 109, 109, 82, 0xFF050508);
+    communicator.scrollFactor.set();
+    add(communicator);
 
-	bismaSprite = new FlxSprite().loadGraphic(Paths.image('bisma'));
-	bismaSprite.setGraphicSize(300, 200);
-	bismaSprite.updateHitbox();
-	bismaSprite.antialiasing = Options.antialiasing;
-	bismaSprite.scrollFactor.set();
-	bismaSprite.visible = false;
-	bismaSprite.screenCenter();
-	add(bismaSprite);
+    var tabLeft = new FlxSprite(812, 264).makeGraphic(25, 62, 0xFF36A96B);
+    tabLeft.angle = -24;
+    tabLeft.scrollFactor.set();
+    add(tabLeft);
 
-	popupBg = new FlxSprite().makeSolid(FlxG.width, FlxG.height, FlxColor.BLACK);
-	popupBg.scrollFactor.set();
-	//popupBg.alpha = 0.3;
+    var tabRight = new FlxSprite(1027, 264).makeGraphic(25, 62, 0xFF36A96B);
+    tabRight.angle = 24;
+    tabRight.scrollFactor.set();
+    add(tabRight);
 
-	blackBox = new FlxSprite().makeSolid(540, 300, FlxColor.BLACK);
-	blackBox.scrollFactor.set();
-	blackBox.screenCenter();
-	//blackBox.alpha = 0.5;
+    var commLetter = new FlxText(850, 230, 168, 'T');
+    commLetter.setFormat(Paths.font('ttg.ttf'), 85, 0xFF18B9D5, 'center');
+    commLetter.alignment = 'center';
+    commLetter.scrollFactor.set();
+    add(commLetter);
 
-	blackBoxTitle = new FlxSprite(blackBox.x, blackBox.y).makeSolid(540, 80, FlxColor.BLACK);
-	blackBoxTitle.scrollFactor.set();
+    statusText = new FlxText(851, 318, 166, 'STATUS:\nSHUT IT!');
+    statusText.setFormat(Paths.font('ttg.ttf'), 19, 0xFFFF5366, 'center');
+    statusText.alignment = 'center';
+    statusText.scrollFactor.set();
+    add(statusText);
 
-	blackTextInfo = new FlxText(blackBoxTitle.x, blackBoxTitle.y + 20, 540, "info");
-	blackTextInfo.setFormat(Paths.font("obelix.ttf"), 38, FlxColor.WHITE, 'center');
-	blackTextInfo.scrollFactor.set();
+    var communicatorLabel = new FlxText(790, 455, 285, 'STATUS!');
+    communicatorLabel.setFormat(Paths.font('ttg.ttf'), 31, 0xFF15151B, 'center');
+    communicatorLabel.alignment = 'center';
+    communicatorLabel.scrollFactor.set();
+    add(communicatorLabel);
 
-	blackText = new FlxText(blackBoxTitle.x, blackBoxTitle.y + 100, 540,
-		"Hehe, you're really impatient, aren't you?" +
-		"\n\nAs of now the story are still in progress!" +
-		"\nFor now, just open the freeplay songs first." + 
-		"\n\nPress BACK / ACCEPT to continue"
-	);
-	blackText.setFormat(Paths.font("montserrat/medium.ttf"), 24, FlxColor.WHITE, 'center');
-	blackText.scrollFactor.set();
+    var statusDetail = new FlxText(775, 501, 315, 'TITAN COMMUNICATOR // ONLINE');
+    statusDetail.setFormat(Paths.font('comm.ttf'), 16, 0xFF4C4A50, 'center');
+    statusDetail.alignment = 'center';
+    statusDetail.scrollFactor.set();
+    add(statusDetail);
 
-	FlxTween.tween(FlxG.camera, {zoom: 1.8}, 1.5, {ease: FlxEase.quintOut, type: FlxTweenType.BACKWARD, onComplete: () -> isZoomLerp = true});
-	FlxTween.tween(bgChar, {x: 970 - (bgChar.width/2)}, 2.5, {ease: FlxEase.quintOut});
+    var help = new FlxText(40, FlxG.height - 42, FlxG.width - 80,
+        'UP / DOWN  SELECT     ENTER  CONFIRM     H  HYPNOTIZED     ESC  TITLE');
+    help.setFormat(Paths.font('comm.ttf'), 17, 0xFF25252D, 'center');
+    help.alignment = 'center';
+    help.scrollFactor.set();
+    add(help);
+
+    changeSelection(0);
 }
 
-var checkBisma:Float = 0;
-var timer:Float = 0;
-function getRandomColor() return FlxColor.fromRGB(FlxG.random.int(0, 255), FlxG.random.int(0, 255), FlxG.random.int(0, 255));
-function update(dt) {
-	timer += dt;
-	bgChar.angle = Math.sin(timer/2) * 3;
-	bgChar.updateHitbox();
-	bgChar.offset.y -= Math.cos(timer/2) * 15;
+function update(elapsed:Float) {
+    if (transitioning) return;
 
-	if (showBisma) {
-		if (bismaSprite.x < 0) {
-			bismaSprite.x = 0; bismaSprite.velocity.x *= -1;
-			bismaSprite.color = getRandomColor();
-		} else if (bismaSprite.x + bismaSprite.width > FlxG.width) {
-			bismaSprite.x = FlxG.width - bismaSprite.width; bismaSprite.velocity.x *= -1;
-			bismaSprite.color = getRandomColor();
-		}
-		if (bismaSprite.y < 0) {
-			bismaSprite.y = 0; bismaSprite.velocity.y *= -1;
-			bismaSprite.color = getRandomColor();
-		} else if (bismaSprite.y + bismaSprite.height > FlxG.height) {
-			bismaSprite.y = FlxG.height - bismaSprite.height; bismaSprite.velocity.y *= -1;
-			bismaSprite.color = getRandomColor();
-		}
-		if (FlxG.mouse.overlaps(bismaSprite) && FlxG.mouse.justReleased) {
-			FlxG.sound.play(Paths.sound("bismaAppear"));
-		}
-	} else if (!transitioning) {
-		checkBisma += dt;
-		if (checkBisma > 60) {
-			checkBisma = 0;
-			if (Date.now().getHours() == 22) {
-				bismaSprite.visible = showBisma = true;
-				bismaSprite.velocity.set(200, 150);
-				bismaSprite.color = getRandomColor();
-				FlxG.sound.play(Paths.sound("bismaAppear"));
-			}
-		}
-	}
+    pulse += elapsed * 2;
+    statusText.alpha = 0.82 + Math.sin(pulse) * 0.15;
 
-	if (FlxG.sound.music.volume < 1.0) {
-		FlxG.sound.music.volume += 0.5 * dt;
-		if (FlxG.sound.music.volume > 1.0) FlxG.sound.music.volume = 1.0;
-	}
+    if (controls.UP_P) changeSelection(-1);
+    else if (controls.DOWN_P) changeSelection(1);
 
-	if (!transitioning) {
-		if (popupAppear) {
-			if (controls.ACCEPT || controls.BACK) closePopup();
-		} else {
-			if (canAccessDebugMenus && FlxG.keys.justPressed.SEVEN) {
-				persistentUpdate = false;
-				persistentDraw = true;
-				openSubState(new EditorPicker());
-			}
+    // H is a direct song shortcut; there is deliberately no secret-menu state.
+    if (FlxG.keys.justPressed.H) {
+        transitioning = true;
+        FlxG.sound.play(Paths.sound('menu/confirm'), 0.7);
+        PlayState.loadSong('HYPNOTIZED', 'hard', null, false, false);
+        FlxG.switchState(new PlayState());
+        return;
+    }
 
-			if (controls.UP_P) changeItem(-1);
-			else if (controls.DOWN_P) changeItem(1);
-			else if (FlxG.mouse.wheel != 0) changeItem(-FlxG.mouse.wheel);
+    if (controls.ACCEPT) selectItem();
 
-			if (controls.BACK) FlxG.switchState(new TitleState());
-			else if (controls.SWITCHMOD) {
-				persistentUpdate = false;
-				persistentDraw = true;
-				openSubState(new ModSwitchMenu());
-			}
-			else if (controls.ACCEPT) selectItem(options[curSelected]);
-		}
-	}
-
-	if (isZoomLerp) FlxG.camera.zoom = lerp(FlxG.camera.zoom, 1, 0.15);
-	FlxG.camera.scroll.y = lerp(FlxG.camera.scroll.y, curSelected * 50, 0.05);
-
-	curSelectLerp = lerp(curSelectLerp, curSelected, 0.15);
-	menuItems.forEach((spr:FlxSprite) -> {
-		var addY = 230;
-		spr.updateHitbox();
-		spr.screenCenter();
-		spr.x += (Math.sin(spr.ID - curSelectLerp - 1.5) * 200) - 20;
-		spr.y += (spr.ID * addY) - (curSelectLerp * addY);
-		spr.angle = (-Math.sin(spr.ID - curSelectLerp) * 22);
-	});
-}
-function beatHit() FlxG.camera.zoom += 0.02;
-
-function selectItem(item) {
-	if (item == 'story mode') {
-		popupAppear = true;
-		add(popupBg);
-		add(blackBoxTitle);
-		add(blackBox);
-		add(blackText);
-		add(blackTextInfo);
-
-		popupBg.alpha = blackBoxTitle.alpha = blackBox.alpha = blackText.alpha = blackTextInfo.alpha = 0;
-		FlxTween.tween(popupBg, {alpha: 0.3}, 0.2, {ease: FlxEase.sineOut});
-		FlxTween.tween(blackBoxTitle, {alpha: 1}, 0.2, {ease: FlxEase.sineOut});
-		FlxTween.tween(blackBox, {alpha: 0.5}, 0.2, {ease: FlxEase.sineOut});
-		FlxTween.tween(blackText, {alpha: 1}, 0.2, {ease: FlxEase.sineOut});
-		FlxTween.tween(blackTextInfo, {alpha: 1}, 0.2, {ease: FlxEase.sineOut});
-	}
-	else {
-		isZoomLerp = false;
-		transitioning = true;
-		FlxG.sound.play(Paths.sound('menu/confirm'), 0.7);
-		FlxG.camera.flash(FlxColor.WHITE, 1);
-
-		bgChar.loadGraphic(Paths.image('portrait/' + curChar + '-kosan-no-saturation'));
-		adjustColorShader.saturation = -100;
-
-		var curSpr:FlxSprite;
-		menuItems.forEach((spr:FlxSprite) -> {
-			if (spr.ID == curSelected) curSpr = spr;
-			else FlxTween.tween(spr, {alpha: 0}, 0.2);
-		});
-
-		FlxTween.cancelTweensOf(FlxG.camera);
-		FlxTween.tween(FlxG.camera, {zoom: 1.1}, 1, {ease: FlxEase.quintOut, onComplete: () -> {
-			FlxTween.tween(FlxG.camera, {zoom: 2.5}, 1.5, {ease: FlxEase.quintIn});
-		}});
-
-		FlxFlicker.flicker(curSpr, 1.75, Options.flashingMenu ? 0.06 : 0.15, true, false, (_) -> {
-			var state;
-			switch (item) {
-				case 'freeplay': state = new FreeplayState();
-				case 'credits':state = new CreditsMain();
-				case 'options': state = new OptionsMenu();
-				default: state = new MainMenuState();
-			}
-			openSubState(new MusicBeatTransition());
-			_requestSubStateReset = false;
-			resetSubState();
-
-			subState.newState = state;
-			subState.transitionCamera.flipY = false;
-			subState.blackSpr.y = -subState.transitionCamera.height;
-			persistentUpdate = persistentDraw = true;
-		});
-	}
+    if (controls.BACK) {
+        transitioning = true;
+        FlxG.switchState(new ModState('TTF/TTFTitleScreen'));
+    }
 }
 
-function closePopup() {
-	FlxTween.cancelTweensOf(popupBg);
-	FlxTween.cancelTweensOf(blackBoxTitle);
-	FlxTween.cancelTweensOf(blackBox);
-	FlxTween.cancelTweensOf(blackText);
-	FlxTween.cancelTweensOf(blackTextInfo);
+function changeSelection(change:Int) {
+    curSelected = FlxMath.wrap(curSelected + change, 0, options.length - 1);
+    if (change != 0) FlxG.sound.play(Paths.sound('menu/scroll'), 0.65);
 
-	FlxTween.tween(popupBg, {alpha: 0}, 0.2, {ease: FlxEase.sineInO});
-	FlxTween.tween(blackBoxTitle, {alpha: 0}, 0.2, {ease: FlxEase.sineIn});
-	FlxTween.tween(blackBox, {alpha: 0}, 0.2, {ease: FlxEase.sineIn});
-	FlxTween.tween(blackText, {alpha: 0}, 0.2, {ease: FlxEase.sineIn});
-	FlxTween.tween(blackTextInfo, {alpha: 0}, 0.2, {ease: FlxEase.sineIn, onComplete: () -> {
-		popupAppear = false;
-		remove(popupBg);
-		remove(blackBoxTitle);
-		remove(blackBox);
-		remove(blackText);
-		remove(blackTextInfo);
-	}});
+    for (i in 0...items.length) {
+        var active = i == curSelected;
+        items[i].text = (active ? '>  ' : '   ') + options[i];
+        items[i].color = active ? 0xFFE5B600 : 0xFF15151B;
+        items[i].alpha = active ? 1 : 0.72;
+    }
 }
 
-function changeItem(add:Int) {
-	curSelected = FlxMath.wrap(curSelected + add, 0, menuItems.length - 1);
-	if (add != 0) FlxG.sound.play(Paths.sound('menu/scroll'), 0.7);
+function selectItem() {
+    transitioning = true;
+    FlxG.sound.play(Paths.sound('menu/confirm'), 0.7);
 
-	menuItems.forEach((spr:FlxSprite) -> spr.animation.play(spr.ID == curSelected ? 'selected' : 'idle'));
+    switch (curSelected) {
+        case 0: FlxG.switchState(new ModState('TTF/TTFFreeplayScreen'));
+        case 1: FlxG.switchState(new ModState('TTF/TTFOptionsScreen'));
+        case 2: FlxG.switchState(new ModState('TTF/TTFCreditsScreen'));
+        case 3: FlxG.switchState(new ModState('TTF/GalleryState'));
+    }
 }

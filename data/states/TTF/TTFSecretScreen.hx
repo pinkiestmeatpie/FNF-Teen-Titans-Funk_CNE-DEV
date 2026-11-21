@@ -1,3 +1,6 @@
+import flixel.FlxSprite;
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
 // Hidden HYPNOTIZED page. Press H from the main menu to open it.
 import funkin.backend.Paths;
 import funkin.menus.MainMenuState;

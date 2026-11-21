@@ -4,6 +4,7 @@ import flixel.util.FlxColor;
 import funkin.backend.scripting.ModState;
 import funkin.backend.Paths;
 import openfl.filters.BlurFilter;
+import openfl.Assets;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
@@ -14,7 +15,7 @@ var pressText:FlxText;
 var blurredBG:FlxSprite;
 
 function createBlurredScene():FlxSprite {
-    var source = Paths.image('stages/warehouse/bg').bitmap;
+    var source = Assets.getBitmapData(Paths.image('stages/warehouse/bg'));
     var bitmap = source.clone();
     bitmap.applyFilter(source, new Rectangle(0, 0, source.width, source.height), new Point(0, 0), new BlurFilter(9, 9, 2));
     var sprite = new FlxSprite().loadGraphic(bitmap);

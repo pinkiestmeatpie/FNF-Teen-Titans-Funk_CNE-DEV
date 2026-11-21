@@ -3,70 +3,93 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import funkin.backend.scripting.ModState;
 import funkin.backend.Paths;
+import openfl.filters.BlurFilter;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
 
 var time:Float = 0;
-var prompt:FlxText;
-var titleA:FlxText;
-var titleB:FlxText;
+var logoTop:FlxText;
+var logoBottom:FlxText;
+var pressText:FlxText;
+var blurredBG:FlxSprite;
+
+function createBlurredScene():FlxSprite {
+    var source = Paths.image('stages/warehouse/bg').bitmap;
+    var bitmap = source.clone();
+    bitmap.applyFilter(source, new Rectangle(0, 0, source.width, source.height), new Point(0, 0), new BlurFilter(9, 9, 2));
+    var sprite = new FlxSprite().loadGraphic(bitmap);
+    sprite.setGraphicSize(FlxG.width, FlxG.height);
+    sprite.updateHitbox();
+    sprite.scrollFactor.set();
+    return sprite;
+}
 
 function create() {
-    FlxG.camera.bgColor = 0xFFF2F0EA;
+    FlxG.camera.bgColor = 0xFFF5F2EC;
+    CoolUtil.playMenuSong();
 
-    var bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFFF2F0EA);
-    bg.scrollFactor.set();
-    add(bg);
+    blurredBG = createBlurredScene();
+    blurredBG.alpha = 0.78;
+    add(blurredBG);
 
-    var blur = new FlxText(0, 175, FlxG.width, 'TEEN TITANS');
-    blur.setFormat(Paths.font('ttg.ttf'), 104, 0xFFB8B6B0, 'center');
-    blur.alignment = 'center';
-    blur.alpha = 0.3;
-    blur.scrollFactor.set();
-    add(blur);
+    // Pale veil keeps the logo readable over the softly blurred scene.
+    var wash = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xB8F5F2EC);
+    wash.scrollFactor.set();
+    add(wash);
 
-    var blur2 = new FlxText(0, 285, FlxG.width, 'FUNK!');
-    blur2.setFormat(Paths.font('ttg.ttf'), 156, 0xFFB8B6B0, 'center');
-    blur2.alignment = 'center';
-    blur2.alpha = 0.3;
-    blur2.scrollFactor.set();
-    add(blur2);
+    var logoShadowTop = new FlxText(0, 208, FlxG.width, 'TEEN TITANS');
+    logoShadowTop.setFormat(Paths.font('ttg.ttf'), 92, 0xFF17171D, 'center');
+    logoShadowTop.alignment = 'center';
+    logoShadowTop.x += 7;
+    logoShadowTop.y += 8;
+    logoShadowTop.scrollFactor.set();
+    add(logoShadowTop);
 
-    var frame = new FlxSprite(82, 112).makeGraphic(1116, 495, 0xFFFFA8B2);
-    frame.scrollFactor.set();
-    add(frame);
+    logoTop = new FlxText(0, 202, FlxG.width, 'TEEN TITANS');
+    logoTop.setFormat(Paths.font('ttg.ttf'), 92, 0xFF18B9D5, 'center');
+    logoTop.alignment = 'center';
+    logoTop.scrollFactor.set();
+    add(logoTop);
 
-    var inset = new FlxSprite(94, 124).makeGraphic(1092, 471, 0xFFFAF8F2);
-    inset.scrollFactor.set();
-    add(inset);
+    var logoShadowBottom = new FlxText(0, 305, FlxG.width, 'FUNK!');
+    logoShadowBottom.setFormat(Paths.font('ttg.ttf'), 146, 0xFF17171D, 'center');
+    logoShadowBottom.alignment = 'center';
+    logoShadowBottom.x += 8;
+    logoShadowBottom.y += 9;
+    logoShadowBottom.scrollFactor.set();
+    add(logoShadowBottom);
 
-    titleA = new FlxText(0, 205, FlxG.width, 'TEEN TITANS');
-    titleA.setFormat(Paths.font('ttg.ttf'), 100, 0xFF20B8D3, 'center');
-    titleA.alignment = 'center';
-    titleA.scrollFactor.set();
-    add(titleA);
+    logoBottom = new FlxText(0, 296, FlxG.width, 'FUNK!');
+    logoBottom.setFormat(Paths.font('ttg.ttf'), 146, 0xFFFFD52F, 'center');
+    logoBottom.alignment = 'center';
+    logoBottom.scrollFactor.set();
+    add(logoBottom);
 
-    titleB = new FlxText(0, 305, FlxG.width, 'FUNK!');
-    titleB.setFormat(Paths.font('ttg.ttf'), 150, 0xFFFFD52F, 'center');
-    titleB.alignment = 'center';
-    titleB.scrollFactor.set();
-    add(titleB);
+    var credit = new FlxText(0, 457, FlxG.width, 'a mod by pinkiestmeatpie');
+    credit.setFormat(Paths.font('comm.ttf'), 22, 0xFF25252D, 'center');
+    credit.alignment = 'center';
+    credit.scrollFactor.set();
+    add(credit);
 
-    var subtitle = new FlxText(0, 455, FlxG.width, 'A FRIDAY NIGHT FUNKIN’ FAN MOD');
-    subtitle.setFormat(Paths.font('comm.ttf'), 19, 0xFF282832, 'center');
-    subtitle.alignment = 'center';
-    subtitle.scrollFactor.set();
-    add(subtitle);
+    pressText = new FlxText(0, FlxG.height - 72, FlxG.width, 'PRESS ENTER TO START');
+    pressText.setFormat(Paths.font('ttg.ttf'), 27, 0xFF20202A, 'center');
+    pressText.alignment = 'center';
+    pressText.scrollFactor.set();
+    add(pressText);
+}
 
-    prompt = new FlxText(0, 630, FlxG.width, 'PRESS ENTER TO START');
-    prompt.setFormat(Paths.font('ttg.ttf'), 27, 0xFF20202A, 'center');
-    prompt.alignment = 'center';
-    prompt.scrollFactor.set();
-    add(prompt);
+function beatHit(curBeat:Int) {
+    logoTop.scale.set(1.055, 1.055);
+    logoBottom.scale.set(1.075, 1.075);
 }
 
 function update(elapsed:Float) {
     time += elapsed;
-    titleB.angle = Math.sin(time * 1.5) * 1.2;
-    prompt.alpha = 0.58 + Math.sin(time * 4) * 0.3;
+    logoTop.scale.x = FlxMath.lerp(logoTop.scale.x, 1, 0.22);
+    logoTop.scale.y = FlxMath.lerp(logoTop.scale.y, 1, 0.22);
+    logoBottom.scale.x = FlxMath.lerp(logoBottom.scale.x, 1, 0.22);
+    logoBottom.scale.y = FlxMath.lerp(logoBottom.scale.y, 1, 0.22);
+    pressText.alpha = 0.62 + Math.sin(time * 4) * 0.28;
 
     if (controls.ACCEPT) {
         FlxG.sound.play(Paths.sound('menu/confirm'), 0.7);

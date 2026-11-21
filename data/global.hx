@@ -24,7 +24,7 @@ static var windowTitleTitan:String = "Teen Titans Funk!";
 static var redirectStates:Map<FlxState, String> = [
 	FreeplayState => "TTF/TTFFreeplayScreen",
 	MainMenuState => "TTF/TTFMainMenu",
-	TitleState => "TTF/TTFTitleScreen",
+	TitleState => "TTF/TTFBeforeTitle",
 	// StoryMenuState => "TTF/TTFFreeplayScreen",
 	// CreditsMain => "TTF/TTFCreditsScreen"
 ];

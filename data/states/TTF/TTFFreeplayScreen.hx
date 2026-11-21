@@ -149,7 +149,7 @@ function update(elapsed:Float) {
     }
 
     if (controls.BACK) {
-        FlxG.sound.play(Paths.sound('menu/cancel'), 0.6);
+        FlxG.sound.play(Paths.sound('menu/scroll'), 0.6);
         FlxG.switchState(new MainMenuState());
     }
 }

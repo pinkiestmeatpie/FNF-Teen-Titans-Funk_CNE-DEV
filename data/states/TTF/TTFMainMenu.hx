@@ -22,7 +22,7 @@ import Date;
 
 var canAccessDebugMenus:Bool = true;
 var options:Array<String> = ['freeplay', 'options', 'credits', 'gallery'];
-var charList:Array<String> = ['bf', 'gf', 'pico'];
+var charList:Array<String> = ['ROBIN', 'STARFIRE', 'RAVEN', 'BEAST BOY', 'CYBORG'];
 
 var menuItems:FlxSpriteGroup;
 var transitioning:Bool = false;
@@ -38,6 +38,8 @@ var chessBG:FlxBackdrop;
 var lineBottom:FlxSprite;
 var lineTop:FlxSprite;
 var bgChar:FlxSprite;
+var bgCharLabel:FlxText;
+var secretHint:FlxText;
 var curChar:String;
 
 // popup info
@@ -80,12 +82,24 @@ function create() {
 	add(chessBG);
 
 	curChar = charList[FlxG.random.int(0, charList.length-1)];
-	bgChar = new FlxSprite(1400, 80).loadGraphic(Paths.image('portrait/' + curChar + '-kosan'));
+	// Intentionally generic art panel until finished Titan portraits are ready.
+	bgChar = new FlxSprite(1400, 80).makeGraphic(360, 500, 0xFF29233F);
 	bgChar.antialiasing = Options.antialiasing;
-	bgChar.scale.set(0.69, 0.69);
-	bgChar.updateHitbox();
 	bgChar.scrollFactor.set(0, 0.5);
 	add(bgChar);
+
+	bgCharLabel = new FlxText(1400, 225, 360, 'TITAN\nPORTRAIT\nPLACEHOLDER');
+	bgCharLabel.setFormat(Paths.font('ttg.ttf'), 38, FlxColor.WHITE, 'center');
+	bgCharLabel.alignment = 'center';
+	bgCharLabel.scrollFactor.set(0, 0.5);
+	bgCharLabel.antialiasing = true;
+	add(bgCharLabel);
+
+	secretHint = new FlxText(FlxG.width - 245, FlxG.height - 42, 220, 'H  //  CLASSIFIED');
+	secretHint.setFormat(Paths.font('comm.ttf'), 18, FlxColor.YELLOW, 'right');
+	secretHint.alignment = 'right';
+	secretHint.scrollFactor.set();
+	add(secretHint);
 
 	new FlxTimer().start(0.4, () -> bg.skew.set(FlxG.random.float(-0.5, 0.5), FlxG.random.float(-0.5, 0.5)), 0);
 
@@ -156,6 +170,7 @@ function create() {
 
 	FlxTween.tween(FlxG.camera, {zoom: 1.8}, 1.5, {ease: FlxEase.quintOut, type: FlxTweenType.BACKWARD, onComplete: () -> isZoomLerp = true});
 	FlxTween.tween(bgChar, {x: 970 - (bgChar.width/2)}, 2.5, {ease: FlxEase.quintOut});
+	FlxTween.tween(bgCharLabel, {x: 970 - (bgCharLabel.width/2)}, 2.5, {ease: FlxEase.quintOut});
 }
 
 var checkBisma:Float = 0;
@@ -163,9 +178,9 @@ var timer:Float = 0;
 function getRandomColor() return FlxColor.fromRGB(FlxG.random.int(0, 255), FlxG.random.int(0, 255), FlxG.random.int(0, 255));
 function update(dt) {
 	timer += dt;
-	bgChar.angle = Math.sin(timer/2) * 3;
-	bgChar.updateHitbox();
-	bgChar.offset.y -= Math.cos(timer/2) * 15;
+	bgChar.angle = Math.sin(timer/2) * 2;
+	bgCharLabel.angle = bgChar.angle;
+	bgCharLabel.y = bgChar.y + 145 + (Math.sin(timer/2) * 8);
 
 	if (showBisma) {
 		if (bismaSprite.x < 0) {
@@ -215,6 +230,7 @@ function update(dt) {
 
 			if (FlxG.keys.justPressed.H) {
 				transitioning = true;
+				FlxG.sound.play(Paths.sound('menu/confirm'), 0.7);
 				FlxG.switchState(new ModState("TTF/TTFSecretScreen"));
 			}
 			else if (controls.UP_P) changeItem(-1);
@@ -268,7 +284,8 @@ function selectItem(item) {
 		FlxG.sound.play(Paths.sound('menu/confirm'), 0.7);
 		FlxG.camera.flash(FlxColor.WHITE, 1);
 
-		bgChar.loadGraphic(Paths.image('portrait/' + curChar + '-kosan-no-saturation'));
+		bgChar.color = FlxColor.GRAY;
+		bgCharLabel.color = FlxColor.GRAY;
 		adjustColorShader.saturation = -100;
 
 		var curSpr:FlxSprite;

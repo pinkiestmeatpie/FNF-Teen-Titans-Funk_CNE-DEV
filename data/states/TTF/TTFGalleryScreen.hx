@@ -37,6 +37,8 @@ function refresh() {
     title.text = entry.title;
     description.text = entry.description;
     count.text = '< ' + (selected + 1) + ' / ' + entries.length + ' >     LEFT / RIGHT: BROWSE    ESC: BACK';
+    FlxTween.cancelTweensOf(artwork);
+    FlxTween.cancelTweensOf(placeholder);
     var path = Paths.image('gallery/images/' + entry.filename);
     if (Assets.exists(path)) {
         artwork.loadGraphic(path);
@@ -52,6 +54,11 @@ function refresh() {
         artwork.visible = false;
         placeholder.visible = true;
     }
+    var panel = artwork.visible ? artwork : placeholder;
+    panel.alpha = 0;
+    panel.x += 30;
+    var targetX = artwork.visible ? (FlxG.width - artwork.width) / 2 : 220;
+    FlxTween.tween(panel, {x: targetX, alpha: 1}, 0.26, {ease: FlxEase.quadOut});
 }
 function update(elapsed:Float) {
     var change = 0;
@@ -63,4 +70,9 @@ function update(elapsed:Float) {
         refresh();
     }
     if (controls.BACK) FlxG.switchState(new MainMenuState());
+}
+
+function destroy() {
+    FlxTween.cancelTweensOf(artwork);
+    FlxTween.cancelTweensOf(placeholder);
 }

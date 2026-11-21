@@ -34,6 +34,12 @@ function refresh() {
     nameText.text = credits[selected].name;
     roleText.text = credits[selected].role;
     descText.text = credits[selected].description;
+    for (text in [nameText, roleText, descText]) {
+        FlxTween.cancelTweensOf(text);
+        text.alpha = 0;
+        text.x = 550;
+        FlxTween.tween(text, {alpha: 1, x: 525}, 0.25, {ease: FlxEase.quadOut});
+    }
     countText.text = '< ' + (selected + 1) + ' / ' + credits.length + ' >     LEFT / RIGHT: BROWSE    ESC: BACK';
 }
 function update(elapsed:Float) {
@@ -46,4 +52,8 @@ function update(elapsed:Float) {
         refresh();
     }
     if (controls.BACK) FlxG.switchState(new MainMenuState());
+}
+
+function destroy() {
+    for (text in [nameText, roleText, descText]) FlxTween.cancelTweensOf(text);
 }

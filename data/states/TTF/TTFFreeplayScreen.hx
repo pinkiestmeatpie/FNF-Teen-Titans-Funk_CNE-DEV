@@ -34,9 +34,9 @@ function create() {
     var hint = new FlxText(55, 655, 1170, 'UP / DOWN: SONG    LEFT / RIGHT: DIFFICULTY    ENTER: PLAY    ESC: BACK', 19);
     hint.setFormat(Paths.font('comm.ttf'), 19, 0xFFAAAAAA, 'center');
     add(hint);
-    refresh();
+    refresh(true);
 }
-function refresh() {
+function refresh(animateCover:Bool) {
     if (songs.length == 0) {
         rows[0].text = 'NO SONGS FOUND';
         cover.visible = false;
@@ -51,19 +51,25 @@ function refresh() {
     }
     var diffs = songs[selected].difficulties;
     diffLabel.text = diffs.length > 0 ? '<  ' + diffs[difficulty].toUpperCase() + '  >' : 'NO CHART AVAILABLE';
+    if (!animateCover) return;
+    FlxTween.cancelTweensOf(cover);
+    FlxTween.cancelTweensOf(coverLabel);
     var coverPath = Paths.image('covers/' + songs[selected].name.toLowerCase());
     if (Assets.exists(coverPath)) {
         cover.loadGraphic(coverPath);
         var scale = Math.min(485 / cover.width, 470 / cover.height);
         cover.setGraphicSize(Std.int(cover.width * scale), Std.int(cover.height * scale));
         cover.updateHitbox();
-        cover.x = 952 - cover.width / 2;
+        cover.x = FlxG.width + 16;
+        FlxTween.tween(cover, {x: 952 - cover.width / 2}, 0.36, {ease: FlxEase.cubicOut});
         cover.y = 340 - cover.height / 2;
         cover.visible = true;
         coverLabel.visible = false;
     } else {
         cover.visible = false;
         coverLabel.visible = true;
+        coverLabel.x = FlxG.width + 16;
+        FlxTween.tween(coverLabel, {x: 710}, 0.36, {ease: FlxEase.cubicOut});
     }
 }
 function update(elapsed:Float) {
@@ -71,19 +77,19 @@ function update(elapsed:Float) {
     var change = 0;
     if (controls.UP_P) change = -1;
     if (controls.DOWN_P) change = 1;
-    if (change != 0 && songs.length > 0) {
+    if (change != 0 && songs.length > 1) {
         selected = FlxMath.wrap(selected + change, 0, songs.length - 1);
         difficulty = 0;
         FlxG.sound.play(Paths.sound('menu/scroll'), 0.7);
-        refresh();
+        refresh(true);
     }
     change = 0;
     if (controls.LEFT_P) change = -1;
     if (controls.RIGHT_P) change = 1;
-    if (change != 0 && songs.length > 0 && songs[selected].difficulties.length > 0) {
+    if (change != 0 && songs.length > 0 && songs[selected].difficulties.length > 1) {
         difficulty = FlxMath.wrap(difficulty + change, 0, songs[selected].difficulties.length - 1);
         FlxG.sound.play(Paths.sound('menu/scroll'), 0.7);
-        refresh();
+        refresh(false);
     }
     if (controls.BACK) {
         leaving = true;
@@ -95,4 +101,9 @@ function update(elapsed:Float) {
         PlayState.loadSong(songs[selected].name, songs[selected].difficulties[difficulty], false, false);
         FlxG.switchState(new PlayState());
     }
+}
+
+function destroy() {
+    FlxTween.cancelTweensOf(cover);
+    FlxTween.cancelTweensOf(coverLabel);
 }

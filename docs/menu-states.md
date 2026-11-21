@@ -2,9 +2,15 @@
 
 # Teen Titans Funk menu states
 
-These scripts target Codename Engine 0.1.0-legacy. Put this folder in the engine's `mods` directory and select the mod. The flow is title → PLAY → main menu. Use the configured menu controls (normally arrows, Enter, and Escape).
+<!-- coderabbit-ai-generated:v1 -->
 
-- `data/states/TTF/TTFTitleScreen.hx` and `TTFBeforeTitle.hx`: placeholder title and PLAY art. Replace their text and shapes with sprites when final art is ready.
+<!-- coderabbit-ai-generated-section:v1:2018c993d16a6eb787d0ce5fefde9a7c5bd0112f15ab6c371655b4ea971441e2 -->
+
+These scripts target Codename Engine 0.1.0-legacy. Put this folder in the engine's `mods` directory and select the mod. The flow is intro → title → PLAY → main menu. Enter skips the intro or advances from the title. Use Enter or click PLAY to open the main menu.
+
+- `data/states/TTF/TTFTitleScreen.hx`: contains the intro cards, title logo, and PLAY reveal in one scene so the backdrop stays in place throughout the transition. Edit `cards` for different intro text and swap the car backdrop, logo text, or Robin sprite when final art is ready.
+
+<!-- /coderabbit-ai-generated:v1 -->
 - `TTFMainMenu.hx`: Freeplay, CNE Options, Credits, and Gallery. The communicator badge is a placeholder.
 - `TTFFreeplayScreen.hx`: reads the engine's song list and each song's available difficulties. Add covers at `images/covers/<lowercase-song-name>.png`; missing covers display a placeholder. Add `data/freeplaySonglist.txt` if you want a specific song order, following CNE's song list format.
 - `TTFCreditsScreen.hx`: edit the `credits` array and replace the portrait placeholder with final art.

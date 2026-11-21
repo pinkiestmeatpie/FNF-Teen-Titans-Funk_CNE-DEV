@@ -5,6 +5,7 @@ var options:Array<String> = ['FREEPLAY', 'OPTIONS', 'CREDITS', 'GALLERY'];
 var items:Array<FlxText> = [];
 var selected:Int = 0;
 var leaving:Bool = false;
+var selectionTween:FlxTween;
 
 function create() {
     CoolUtil.playMenuSong();
@@ -24,6 +25,9 @@ function create() {
         item.setFormat(Paths.font('baveuse.ttf'), 62, FlxColor.BLACK, 'center');
         items.push(item);
         add(item);
+        item.alpha = 0;
+        item.y += 25;
+        FlxTween.tween(item, {alpha: 1, y: 160 + i * 95}, 0.25, {ease: FlxEase.quadOut, startDelay: i * 0.055});
     }
     // Placeholder communicator badge from the sketch.
     add(new FlxSprite(1020, 495).makeGraphic(130, 105, FlxColor.BLACK));
@@ -51,10 +55,16 @@ function update(elapsed:Float) {
         selected = FlxMath.wrap(selected + change, 0, options.length - 1);
         FlxG.sound.play(Paths.sound('menu/scroll'), 0.7);
         refresh();
+        var previous = items[FlxMath.wrap(selected - change, 0, options.length - 1)];
+        if (selectionTween != null) selectionTween.cancel();
+        previous.scale.set(1, 1);
+        var item = items[selected];
+        item.scale.set(1.08, 1.08);
+        selectionTween = FlxTween.tween(item.scale, {x: 1, y: 1}, 0.2, {ease: FlxEase.quadOut});
     }
     if (controls.BACK) {
         leaving = true;
-        FlxG.switchState(new ModState('TTF/TTFBeforeTitle'));
+        FlxG.switchState(new ModState('TTF/TTFTitleScreen', {showPlay: true}));
     } else if (controls.ACCEPT) {
         leaving = true;
         FlxG.sound.play(Paths.sound('menu/confirm'), 0.7);
@@ -67,4 +77,9 @@ function update(elapsed:Float) {
             case 3: FlxG.switchState(new ModState('TTF/TTFGalleryScreen'));
         }
     }
+}
+
+function destroy() {
+    for (item in items) FlxTween.cancelTweensOf(item);
+    if (selectionTween != null) selectionTween.cancel();
 }

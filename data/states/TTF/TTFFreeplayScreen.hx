@@ -1,87 +1,93 @@
 import flixel.FlxSprite;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-// Teen Titans Funk! - custom freeplay screen
 import funkin.menus.FreeplaySonglist;
+import funkin.backend.scripting.ModState;
 import funkin.backend.Paths;
-import funkin.backend.CoolUtil;
-import funkin.menus.MainMenuState;
+import funkin.game.PlayState;
 
 var songs:Array<Any> = [];
 var curSelected:Int = 0;
-var previousSelected:Int = -1;
-var songItems:Array<FlxText> = [];
+var lastSelected:Int = -1;
+var songLabels:Array<FlxText> = [];
 var cover:FlxSprite;
 var songTitle:FlxText;
-var songInfo:FlxText;
-var emptyMessage:FlxText;
+var songMeta:FlxText;
+var emptyText:FlxText;
 
 function create() {
     CoolUtil.playMenuSong();
+    FlxG.camera.bgColor = 0xFF08080D;
 
-    var bg = new FlxSprite().loadGraphic(Paths.image('menus/freeplay/bg'));
-    bg.setGraphicSize(FlxG.width, FlxG.height);
-    bg.updateHitbox();
+    var bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFF08080D);
     bg.scrollFactor.set();
-    bg.antialiasing = true;
     add(bg);
 
-    var shade = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-    shade.alpha = 0.38;
-    shade.scrollFactor.set();
-    add(shade);
+    // The black inset and pink frame follow the song-select mockup.
+    var frame = new FlxSprite(42, 82).makeGraphic(1196, 558, 0xFFFFAAB5);
+    frame.scrollFactor.set();
+    add(frame);
 
-    var leftPanel = new FlxSprite(35, 95).makeGraphic(570, 535, 0xD9000710);
-    leftPanel.scrollFactor.set();
-    add(leftPanel);
+    var panel = new FlxSprite(54, 94).makeGraphic(1172, 534, 0xFF09090F);
+    panel.scrollFactor.set();
+    add(panel);
 
-    var rightPanel = new FlxSprite(645, 95).makeGraphic(600, 535, 0xD9000710);
-    rightPanel.scrollFactor.set();
-    add(rightPanel);
+    var heading = new FlxText(88, 112, 600, 'FREEPLAY');
+    heading.setFormat(Paths.font('ttg.ttf'), 48, FlxColor.WHITE, 'left');
+    heading.scrollFactor.set();
+    add(heading);
 
-    var header = new FlxText(55, 28, 900, 'FREEPLAY // SELECT A SONG');
-    header.setFormat(Paths.font('ttg.ttf'), 42, FlxColor.WHITE, 'left');
-    header.scrollFactor.set();
-    add(header);
+    var subheading = new FlxText(91, 165, 500, 'SELECT A TRACK');
+    subheading.setFormat(Paths.font('comm.ttf'), 18, 0xFFFFD52F, 'left');
+    subheading.scrollFactor.set();
+    add(subheading);
+
+    var divider = new FlxSprite(620, 130).makeGraphic(4, 445, 0xFFFFAAB5);
+    divider.scrollFactor.set();
+    add(divider);
 
     var songList = FreeplaySonglist.get();
     songs = songList == null || songList.songs == null ? [] : songList.songs;
 
     for (i in 0...songs.length) {
-        var label = new FlxText(70, 170, 490, '');
-        label.setFormat(Paths.font('ttg.ttf'), 36, FlxColor.WHITE, 'left');
+        var label = new FlxText(90, 235, 490, '');
+        label.setFormat(Paths.font('ttg.ttf'), 37, FlxColor.YELLOW, 'left');
         label.scrollFactor.set();
         label.ID = i;
-        songItems.push(label);
+        songLabels.push(label);
         add(label);
     }
 
-    cover = new FlxSprite(0, 0);
+    var coverFrame = new FlxSprite(690, 153).makeGraphic(475, 360, 0xFF24242C);
+    coverFrame.scrollFactor.set();
+    add(coverFrame);
+
+    cover = new FlxSprite(702, 165);
     cover.scrollFactor.set();
     cover.antialiasing = true;
     add(cover);
 
-    songTitle = new FlxText(675, 470, 540, 'NO SONG SELECTED');
-    songTitle.setFormat(Paths.font('ttg.ttf'), 34, FlxColor.YELLOW, 'center');
+    songTitle = new FlxText(690, 530, 475, 'SONG COVER');
+    songTitle.setFormat(Paths.font('ttg.ttf'), 32, FlxColor.YELLOW, 'center');
     songTitle.alignment = 'center';
     songTitle.scrollFactor.set();
     add(songTitle);
 
-    songInfo = new FlxText(685, 520, 520, 'Use UP / DOWN to browse');
-    songInfo.setFormat(Paths.font('comm.ttf'), 22, FlxColor.WHITE, 'center');
-    songInfo.alignment = 'center';
-    songInfo.scrollFactor.set();
-    add(songInfo);
+    songMeta = new FlxText(690, 570, 475, 'ENTER TO PLAY');
+    songMeta.setFormat(Paths.font('comm.ttf'), 18, FlxColor.WHITE, 'center');
+    songMeta.alignment = 'center';
+    songMeta.scrollFactor.set();
+    add(songMeta);
 
-    emptyMessage = new FlxText(65, 210, 510, 'No songs were found in the freeplay song list.');
-    emptyMessage.setFormat(Paths.font('comm.ttf'), 28, FlxColor.WHITE, 'center');
-    emptyMessage.alignment = 'center';
-    emptyMessage.scrollFactor.set();
-    emptyMessage.visible = songs.length == 0;
-    add(emptyMessage);
+    emptyText = new FlxText(85, 255, 500, 'NO TRACKS FOUND');
+    emptyText.setFormat(Paths.font('ttg.ttf'), 30, FlxColor.WHITE, 'center');
+    emptyText.alignment = 'center';
+    emptyText.scrollFactor.set();
+    emptyText.visible = songs.length == 0;
+    add(emptyText);
 
-    var footer = new FlxText(40, FlxG.height - 48, FlxG.width - 80, 'ENTER  PLAY     //     ESC  BACK');
-    footer.setFormat(Paths.font('comm.ttf'), 20, FlxColor.WHITE, 'center');
+    var footer = new FlxText(40, FlxG.height - 45, FlxG.width - 80, 'UP / DOWN  BROWSE     ENTER  PLAY     ESC  BACK');
+    footer.setFormat(Paths.font('comm.ttf'), 18, FlxColor.WHITE, 'center');
     footer.alignment = 'center';
     footer.scrollFactor.set();
     add(footer);
@@ -90,45 +96,44 @@ function create() {
 }
 
 function refreshSelection() {
-    if (songs.length <= 0) return;
+    if (songs.length == 0) return;
 
-    for (i in 0...songItems.length) {
-        var distance:Int = i - curSelected;
-        var label:FlxText = songItems[i];
-        label.visible = Math.abs(distance) <= 3;
-        label.y = 178 + (distance * 88);
-        label.x = 70 + (Math.abs(distance) * 18);
-        label.text = (i == curSelected ? '> ' : '  ') + songs[i].displayName;
-        label.color = i == curSelected ? FlxColor.YELLOW : FlxColor.WHITE;
-        label.alpha = i == curSelected ? 1 : 0.58;
-        label.size = i == curSelected ? 40 : 32;
+    for (i in 0...songLabels.length) {
+        var distance = i - curSelected;
+        songLabels[i].visible = Math.abs(distance) <= 3;
+        songLabels[i].y = 250 + (distance * 76);
+        songLabels[i].text = (i == curSelected ? '>  ' : '   ') + Std.string(songs[i].displayName).toUpperCase();
+        songLabels[i].color = i == curSelected ? 0xFFFFD52F : FlxColor.WHITE;
+        songLabels[i].alpha = i == curSelected ? 1 : 0.58;
+        songLabels[i].size = i == curSelected ? 42 : 35;
     }
 
-    var coverPath:String = 'menus/freeplay/covers/placeholder';
-    var songName:String = songs[curSelected].name == null ? '' : Std.string(songs[curSelected].name).toLowerCase();
+    var songName = Std.string(songs[curSelected].name).toLowerCase();
+    var coverKey = 'covers/idk';
     switch (songName) {
-        case 'abc': coverPath = 'covers/abc';
-        case 'hypnotized': coverPath = 'covers/hypnotized';
+        case 'abc': coverKey = 'covers/abc';
+        case 'hypnotized': coverKey = 'covers/hypnotized';
+        case 'idk': coverKey = 'covers/idk';
     }
 
-    cover.loadGraphic(Paths.image(coverPath));
+    cover.loadGraphic(Paths.image(coverKey));
     cover.setGraphicSize(440);
     cover.updateHitbox();
-    cover.x = 725 + (440 - cover.width) / 2;
-    cover.y = 125 + (390 - cover.height) / 2;
+    cover.x = 707 + (440 - cover.width) / 2;
+    cover.y = 172 + (330 - cover.height) / 2;
 
-    songTitle.text = songs[curSelected].displayName.toUpperCase();
-    songInfo.text = 'TRACK ' + (curSelected + 1) + ' / ' + songs.length + '     //     ENTER TO PLAY';
-    previousSelected = curSelected;
+    songTitle.text = Std.string(songs[curSelected].displayName).toUpperCase();
+    songMeta.text = 'TRACK ' + (curSelected + 1) + ' / ' + songs.length + '     //     ENTER TO PLAY';
+    lastSelected = curSelected;
 }
 
 function update(elapsed:Float) {
-    if (songs.length <= 0) {
-        if (controls.BACK) FlxG.switchState(new MainMenuState());
+    if (songs.length == 0) {
+        if (controls.BACK) FlxG.switchState(new ModState('TTF/TTFMainMenu'));
         return;
     }
 
-    var moved:Bool = false;
+    var moved = false;
     if (controls.UP_P) {
         curSelected--;
         moved = true;
@@ -140,19 +145,21 @@ function update(elapsed:Float) {
     if (curSelected < 0) curSelected = songs.length - 1;
     if (curSelected >= songs.length) curSelected = 0;
 
-    if (moved && curSelected != previousSelected) {
+    if (moved && curSelected != lastSelected) {
         FlxG.sound.play(Paths.sound('menu/scroll'), 0.65);
         refreshSelection();
     }
 
     if (controls.ACCEPT) {
+        var difficulty = 'normal';
+        if (songs[curSelected].difficulties != null && songs[curSelected].difficulties.length > 0)
+            difficulty = Std.string(songs[curSelected].difficulties[0]).toLowerCase();
+
+        var variant = songs[curSelected].variant;
         FlxG.sound.play(Paths.sound('menu/confirm'), 0.7);
-        PlayState.loadSong(songs[curSelected].name, 'hard', false, false);
+        PlayState.loadSong(songs[curSelected].name, difficulty, variant, false, false);
         FlxG.switchState(new PlayState());
     }
 
-    if (controls.BACK) {
-        FlxG.sound.play(Paths.sound('menu/scroll'), 0.6);
-        FlxG.switchState(new MainMenuState());
-    }
+    if (controls.BACK) FlxG.switchState(new ModState('TTF/TTFMainMenu'));
 }

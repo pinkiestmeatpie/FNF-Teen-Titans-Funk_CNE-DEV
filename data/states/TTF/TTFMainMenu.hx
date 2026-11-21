@@ -1,97 +1,116 @@
 import flixel.FlxSprite;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import flixel.util.FlxSpriteUtil;
 import funkin.backend.scripting.ModState;
 import funkin.backend.Paths;
-import funkin.options.OptionsMenu;
+import funkin.game.PlayState;
 
 var options:Array<String> = ['FREEPLAY', 'OPTIONS', 'CREDITS', 'GALLERY'];
 var items:Array<FlxText> = [];
 var curSelected:Int = 0;
 var transitioning:Bool = false;
-var time:Float = 0;
+var pulse:Float = 0;
 var statusText:FlxText;
+var communicator:FlxSprite;
 
 function create() {
-    FlxG.camera.bgColor = 0xFFF6F3EC;
+    FlxG.camera.bgColor = 0xFFF5F2EC;
     CoolUtil.playMenuSong();
 
-    var bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFFF6F3EC);
-    bg.scrollFactor.set();
-    add(bg);
+    // Faded scene backdrop from the mod's own stage art.
+    var scene = new FlxSprite().loadGraphic(Paths.image('stages/warehouse/bg'));
+    scene.setGraphicSize(FlxG.width, FlxG.height);
+    scene.updateHitbox();
+    scene.scrollFactor.set();
+    scene.alpha = 0.28;
+    add(scene);
 
-    // Pink registration-frame language from the design sheet.
-    var frame = new FlxSprite(42, 86).makeGraphic(690, 552, 0xFFFFAAB5);
-    frame.scrollFactor.set();
-    add(frame);
-
-    var paper = new FlxSprite(54, 98).makeGraphic(666, 528, 0xFFFFFFFF);
+    var paper = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xBFF5F2EC);
     paper.scrollFactor.set();
     add(paper);
 
-    var title = new FlxText(80, 115, 575, 'TEEN TITANS FUNK!');
-    title.setFormat(Paths.font('ttg.ttf'), 42, 0xFF20202A, 'left');
-    title.scrollFactor.set();
-    add(title);
+    var frame = new FlxSprite(44, 80).makeGraphic(650, 560, 0xFFFFAAB5);
+    frame.scrollFactor.set();
+    add(frame);
 
-    var line = new FlxSprite(80, 172).makeGraphic(565, 5, 0xFFFFAAB5);
-    line.scrollFactor.set();
-    add(line);
+    var menuPanel = new FlxSprite(56, 92).makeGraphic(626, 536, 0xFFFDFCF8);
+    menuPanel.scrollFactor.set();
+    add(menuPanel);
 
-    // Oversized bracket shapes echo the sweeping black marks in the sketch.
-    var leftBracket = new FlxText(54, 205, 90, '(((');
-    leftBracket.setFormat(Paths.font('ttg.ttf'), 104, 0xFF17171D, 'center');
-    leftBracket.angle = -90;
-    leftBracket.alpha = 0.85;
+    var label = new FlxText(92, 112, 500, 'MENU');
+    label.setFormat(Paths.font('comm.ttf'), 18, 0xFF7C7B80, 'left');
+    label.scrollFactor.set();
+    add(label);
+
+    // Large, unrotated parentheses form the curved brackets around the menu list.
+    var leftBracket = new FlxText(50, 163, 115, '(');
+    leftBracket.setFormat(Paths.font('ttg.ttf'), 395, 0xFF101015, 'center');
+    leftBracket.alignment = 'center';
     leftBracket.scrollFactor.set();
     add(leftBracket);
 
-    var rightBracket = new FlxText(612, 205, 90, ')))');
-    rightBracket.setFormat(Paths.font('ttg.ttf'), 104, 0xFF17171D, 'center');
-    rightBracket.angle = 90;
-    rightBracket.alpha = 0.85;
+    var rightBracket = new FlxText(574, 163, 115, ')');
+    rightBracket.setFormat(Paths.font('ttg.ttf'), 395, 0xFF101015, 'center');
+    rightBracket.alignment = 'center';
     rightBracket.scrollFactor.set();
     add(rightBracket);
 
     for (i in 0...options.length) {
-        var label = new FlxText(140, 225 + (i * 82), 470, '');
-        label.setFormat(Paths.font('ttg.ttf'), 49, 0xFF17171D, 'center');
-        label.alignment = 'center';
-        label.ID = i;
-        label.scrollFactor.set();
-        items.push(label);
-        add(label);
+        var item = new FlxText(140, 212 + (i * 83), 420, '');
+        item.setFormat(Paths.font('ttg.ttf'), 48, 0xFF101015, 'center');
+        item.alignment = 'center';
+        item.ID = i;
+        item.scrollFactor.set();
+        items.push(item);
+        add(item);
     }
 
-    // Status badge from the sketch.
-    var badge = new FlxSprite(815, 205).makeGraphic(300, 300, 0xFFFFD52F);
-    badge.scrollFactor.set();
-    add(badge);
+    // Round communicator: yellow casing, black face, green side details.
+    communicator = new FlxSprite(825, 220).makeGraphic(218, 218, FlxColor.TRANSPARENT, true);
+    FlxSpriteUtil.drawCircle(communicator, 109, 109, 105, 0xFFFFD52F);
+    FlxSpriteUtil.drawCircle(communicator, 109, 109, 91, 0xFF111116);
+    FlxSpriteUtil.drawCircle(communicator, 109, 109, 82, 0xFF050508);
+    communicator.scrollFactor.set();
+    add(communicator);
 
-    var badgeInner = new FlxSprite(832, 222).makeGraphic(266, 266, 0xFF17171D);
-    badgeInner.scrollFactor.set();
-    add(badgeInner);
+    var tabLeft = new FlxSprite(812, 264).makeGraphic(25, 62, 0xFF36A96B);
+    tabLeft.angle = -24;
+    tabLeft.scrollFactor.set();
+    add(tabLeft);
 
-    var badgeLetter = new FlxText(832, 220, 266, 'T');
-    badgeLetter.setFormat(Paths.font('ttg.ttf'), 150, 0xFF20B8D3, 'center');
-    badgeLetter.alignment = 'center';
-    badgeLetter.scrollFactor.set();
-    add(badgeLetter);
+    var tabRight = new FlxSprite(1027, 264).makeGraphic(25, 62, 0xFF36A96B);
+    tabRight.angle = 24;
+    tabRight.scrollFactor.set();
+    add(tabRight);
 
-    statusText = new FlxText(805, 520, 320, 'STATUS:  SHUT IT!');
-    statusText.setFormat(Paths.font('ttg.ttf'), 25, 0xFF17171D, 'center');
+    var commLetter = new FlxText(850, 230, 168, 'T');
+    commLetter.setFormat(Paths.font('ttg.ttf'), 85, 0xFF18B9D5, 'center');
+    commLetter.alignment = 'center';
+    commLetter.scrollFactor.set();
+    add(commLetter);
+
+    statusText = new FlxText(851, 318, 166, 'STATUS:\nSHUT IT!');
+    statusText.setFormat(Paths.font('ttg.ttf'), 19, 0xFFFF5366, 'center');
     statusText.alignment = 'center';
     statusText.scrollFactor.set();
     add(statusText);
 
-    var team = new FlxText(790, 565, 360, 'ROBIN  //  STARFIRE  //  RAVEN');
-    team.setFormat(Paths.font('comm.ttf'), 17, 0xFF34343B, 'center');
-    team.alignment = 'center';
-    team.scrollFactor.set();
-    add(team);
+    var communicatorLabel = new FlxText(790, 455, 285, 'STATUS!');
+    communicatorLabel.setFormat(Paths.font('ttg.ttf'), 31, 0xFF15151B, 'center');
+    communicatorLabel.alignment = 'center';
+    communicatorLabel.scrollFactor.set();
+    add(communicatorLabel);
 
-    var help = new FlxText(45, FlxG.height - 42, FlxG.width - 90, 'UP / DOWN  SELECT     ENTER  CONFIRM     H  ???');
-    help.setFormat(Paths.font('comm.ttf'), 18, 0xFF24242B, 'center');
+    var statusDetail = new FlxText(775, 501, 315, 'TITAN COMMUNICATOR // ONLINE');
+    statusDetail.setFormat(Paths.font('comm.ttf'), 16, 0xFF4C4A50, 'center');
+    statusDetail.alignment = 'center';
+    statusDetail.scrollFactor.set();
+    add(statusDetail);
+
+    var help = new FlxText(40, FlxG.height - 42, FlxG.width - 80,
+        'UP / DOWN  SELECT     ENTER  CONFIRM     H  HYPNOTIZED     ESC  TITLE');
+    help.setFormat(Paths.font('comm.ttf'), 17, 0xFF25252D, 'center');
     help.alignment = 'center';
     help.scrollFactor.set();
     add(help);
@@ -101,28 +120,28 @@ function create() {
 
 function update(elapsed:Float) {
     if (transitioning) return;
-    time += elapsed;
 
-    badgePulse();
+    pulse += elapsed * 2;
+    statusText.alpha = 0.82 + Math.sin(pulse) * 0.15;
+
     if (controls.UP_P) changeSelection(-1);
     else if (controls.DOWN_P) changeSelection(1);
 
+    // H is a direct song shortcut; there is deliberately no secret-menu state.
     if (FlxG.keys.justPressed.H) {
         transitioning = true;
         FlxG.sound.play(Paths.sound('menu/confirm'), 0.7);
-        FlxG.switchState(new ModState('TTF/TTFSecretScreen'));
+        PlayState.loadSong('HYPNOTIZED', 'hard', null, false, false);
+        FlxG.switchState(new PlayState());
         return;
     }
 
     if (controls.ACCEPT) selectItem();
+
     if (controls.BACK) {
         transitioning = true;
         FlxG.switchState(new ModState('TTF/TTFTitleScreen'));
     }
-}
-
-function badgePulse() {
-    statusText.alpha = 0.83 + Math.sin(time * 2) * 0.12;
 }
 
 function changeSelection(change:Int) {
@@ -132,19 +151,19 @@ function changeSelection(change:Int) {
     for (i in 0...items.length) {
         var active = i == curSelected;
         items[i].text = (active ? '>  ' : '   ') + options[i];
-        items[i].color = active ? 0xFFE3A900 : 0xFF17171D;
+        items[i].color = active ? 0xFFE5B600 : 0xFF15151B;
         items[i].alpha = active ? 1 : 0.72;
-        items[i].size = active ? 51 : 45;
     }
 }
 
 function selectItem() {
     transitioning = true;
     FlxG.sound.play(Paths.sound('menu/confirm'), 0.7);
+
     switch (curSelected) {
         case 0: FlxG.switchState(new ModState('TTF/TTFFreeplayScreen'));
         case 1: FlxG.switchState(new ModState('TTF/TTFOptionsScreen'));
         case 2: FlxG.switchState(new ModState('TTF/TTFCreditsScreen'));
-        case 3: FlxG.switchState(new ModState('TTF/TTFGalleryScreen'));
+        case 3: FlxG.switchState(new ModState('TTF/GalleryState'));
     }
 }

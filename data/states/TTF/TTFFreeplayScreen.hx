@@ -153,7 +153,7 @@ function update(elapsed:Float) {
         } else {
             var difficulty = Flags.DEFAULT_DIFFICULTY;
             if (chart.difficulties != null && chart.difficulties.length > 0)
-                difficulty = Std.string(chart.difficulties[0]);
+                difficulty = Std.string(chart.difficulties[0]).toLowerCase();
             PlayState.loadSong(chart.name, difficulty, chart.variant, false, false);
             FlxG.sound.play(Paths.sound('menu/confirm'), 0.7);
             FlxG.switchState(new PlayState());

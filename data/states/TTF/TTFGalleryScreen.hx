@@ -5,11 +5,11 @@ import funkin.backend.scripting.ModState;
 import funkin.backend.Paths;
 
 var entries:Array<Dynamic> = [
-    {name: 'ROBIN', letter: 'R', color: 0xFFE84E52, note: 'CHARACTER ART // PLACEHOLDER'},
-    {name: 'STARFIRE', letter: 'S', color: 0xFFE78A43, note: 'CHARACTER ART // PLACEHOLDER'},
-    {name: 'RAVEN', letter: 'R', color: 0xFF7257A6, note: 'CHARACTER ART // PLACEHOLDER'},
-    {name: 'BEAST BOY', letter: 'B', color: 0xFF55A96A, note: 'CHARACTER ART // PLACEHOLDER'},
-    {name: 'CYBORG', letter: 'C', color: 0xFF4B9CB7, note: 'CHARACTER ART // PLACEHOLDER'}
+    {name: 'ROBIN', file: 'squareImageTest', note: 'CHARACTER ART // PLACEHOLDER'},
+    {name: 'STARFIRE', file: 'widthTestImage', note: 'CHARACTER ART // PLACEHOLDER'},
+    {name: 'RAVEN', file: 'heightTestImage', note: 'CHARACTER ART // PLACEHOLDER'},
+    {name: 'BEAST BOY', file: 'squareImageTest', note: 'CHARACTER ART // PLACEHOLDER'},
+    {name: 'CYBORG', file: 'widthTestImage', note: 'CHARACTER ART // PLACEHOLDER'}
 ];
 
 var selected:Int = 0;
@@ -47,9 +47,22 @@ function create() {
     screen.scrollFactor.set();
     add(screen);
 
-    preview = new FlxSprite(275, 130).makeGraphic(730, 365, 0xFF4D8194);
+    preview = new FlxSprite(275, 130);
     preview.scrollFactor.set();
+    preview.antialiasing = true;
     add(preview);
+
+    var leftArrow = new FlxText(90, 310, 130, '<');
+    leftArrow.setFormat(Paths.font('ttg.ttf'), 90, FlxColor.WHITE, 'center');
+    leftArrow.alignment = 'center';
+    leftArrow.scrollFactor.set();
+    add(leftArrow);
+
+    var rightArrow = new FlxText(1060, 310, 130, '>');
+    rightArrow.setFormat(Paths.font('ttg.ttf'), 90, FlxColor.WHITE, 'center');
+    rightArrow.alignment = 'center';
+    rightArrow.scrollFactor.set();
+    add(rightArrow);
 
     previewLetter = new FlxText(275, 180, 730, '');
     previewLetter.setFormat(Paths.font('ttg.ttf'), 230, FlxColor.WHITE, 'center');
@@ -89,8 +102,12 @@ function create() {
 }
 
 function refreshGallery() {
-    preview.color = entries[selected].color;
-    previewLetter.text = entries[selected].letter;
+    preview.loadGraphic(Paths.image('gallery/images/' + entries[selected].file));
+    preview.setGraphicSize(730, 365);
+    preview.updateHitbox();
+    preview.x = 275 + (730 - preview.width) / 2;
+    preview.y = 130 + (365 - preview.height) / 2;
+    previewLetter.visible = false;
     note.text = entries[selected].note;
     count.text = 'LEFT / RIGHT  BROWSE     //     ESC  BACK     //     ' + (selected + 1) + ' / ' + entries.length;
 

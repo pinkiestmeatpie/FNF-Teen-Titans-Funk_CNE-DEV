@@ -1,83 +1,104 @@
 import flixel.FlxSprite;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-import flixel.addons.display.FlxBackdrop;
-// Gallery screen - the images here are placeholders and can be replaced freely.
+import funkin.backend.scripting.ModState;
 import funkin.backend.Paths;
-import funkin.menus.MainMenuState;
 
 var entries:Array<Dynamic> = [
-    {file: 'squareImageTest', title: 'ARTWORK PLACEHOLDER', description: 'Replace this image with finished promotional art.'},
-    {file: 'widthTestImage', title: 'CHARACTER ART PLACEHOLDER', description: 'A space for sketches, character poses, or concept art.'},
-    {file: 'heightTestImage', title: 'SCENE ART PLACEHOLDER', description: 'A space for backgrounds, screenshots, and other extras.'}
+    {name: 'ROBIN', letter: 'R', color: 0xFFE84E52, note: 'CHARACTER ART // PLACEHOLDER'},
+    {name: 'STARFIRE', letter: 'S', color: 0xFFE78A43, note: 'CHARACTER ART // PLACEHOLDER'},
+    {name: 'RAVEN', letter: 'R', color: 0xFF7257A6, note: 'CHARACTER ART // PLACEHOLDER'},
+    {name: 'BEAST BOY', letter: 'B', color: 0xFF55A96A, note: 'CHARACTER ART // PLACEHOLDER'},
+    {name: 'CYBORG', letter: 'C', color: 0xFF4B9CB7, note: 'CHARACTER ART // PLACEHOLDER'}
 ];
 
 var selected:Int = 0;
-var art:FlxSprite;
-var titleText:FlxText;
-var descriptionText:FlxText;
-var counterText:FlxText;
+var preview:FlxSprite;
+var previewLetter:FlxText;
+var heading:FlxText;
+var note:FlxText;
+var count:FlxText;
+var thumbs:Array<FlxText> = [];
 
 function create() {
-    var bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFF170D28);
+    FlxG.camera.bgColor = 0xFF18233A;
+
+    var bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFF18233A);
     bg.scrollFactor.set();
     add(bg);
 
-    var pattern = new FlxBackdrop();
-    pattern.loadGraphic(Paths.image('gallery/prettyCheckers'));
-    pattern.velocity.set(-18, 9);
-    pattern.alpha = 0.16;
-    pattern.scrollFactor.set();
-    add(pattern);
+    // Blue checkerboard-inspired gallery chrome.
+    for (i in 0...10) {
+        var tile = new FlxSprite(i * 130, 0).makeGraphic(65, FlxG.height, i % 2 == 0 ? 0xFF233956 : 0xFF1D304B);
+        tile.alpha = 0.25;
+        tile.scrollFactor.set();
+        add(tile);
+    }
 
-    var panel = new FlxSprite(90, 105).makeGraphic(1100, 520, 0xE8090712);
-    panel.scrollFactor.set();
-    add(panel);
+    var top = new FlxSprite(36, 35).makeGraphic(1208, 650, 0xFF0B111D);
+    top.scrollFactor.set();
+    add(top);
 
-    var heading = new FlxText(0, 28, FlxG.width, 'TITANS // GALLERY');
-    heading.setFormat(Paths.font('ttg.ttf'), 44, FlxColor.WHITE, 'center');
+    var inner = new FlxSprite(53, 53).makeGraphic(1174, 614, 0xFF2C5270);
+    inner.scrollFactor.set();
+    add(inner);
+
+    var screen = new FlxSprite(250, 105).makeGraphic(780, 415, 0xFFE5E9E4);
+    screen.scrollFactor.set();
+    add(screen);
+
+    preview = new FlxSprite(275, 130).makeGraphic(730, 365, 0xFF4D8194);
+    preview.scrollFactor.set();
+    add(preview);
+
+    previewLetter = new FlxText(275, 180, 730, '');
+    previewLetter.setFormat(Paths.font('ttg.ttf'), 230, FlxColor.WHITE, 'center');
+    previewLetter.alignment = 'center';
+    previewLetter.scrollFactor.set();
+    add(previewLetter);
+
+    heading = new FlxText(75, 70, 1100, 'TITANS // GALLERY');
+    heading.setFormat(Paths.font('ttg.ttf'), 37, FlxColor.WHITE, 'center');
     heading.alignment = 'center';
     heading.scrollFactor.set();
     add(heading);
 
-    art = new FlxSprite();
-    art.scrollFactor.set();
-    art.antialiasing = true;
-    add(art);
+    note = new FlxText(250, 530, 780, '');
+    note.setFormat(Paths.font('comm.ttf'), 18, FlxColor.WHITE, 'center');
+    note.alignment = 'center';
+    note.scrollFactor.set();
+    add(note);
 
-    titleText = new FlxText(150, 540, 980, '');
-    titleText.setFormat(Paths.font('ttg.ttf'), 34, FlxColor.YELLOW, 'center');
-    titleText.alignment = 'center';
-    titleText.scrollFactor.set();
-    add(titleText);
+    for (i in 0...entries.length) {
+        var thumb = new FlxText(90 + (i * 220), 580, 200, '');
+        thumb.setFormat(Paths.font('ttg.ttf'), 25, FlxColor.WHITE, 'center');
+        thumb.alignment = 'center';
+        thumb.ID = i;
+        thumb.scrollFactor.set();
+        thumbs.push(thumb);
+        add(thumb);
+    }
 
-    descriptionText = new FlxText(160, 585, 960, '');
-    descriptionText.setFormat(Paths.font('comm.ttf'), 20, FlxColor.WHITE, 'center');
-    descriptionText.alignment = 'center';
-    descriptionText.scrollFactor.set();
-    add(descriptionText);
-
-    counterText = new FlxText(0, FlxG.height - 45, FlxG.width, '');
-    counterText.setFormat(Paths.font('comm.ttf'), 20, FlxColor.WHITE, 'center');
-    counterText.alignment = 'center';
-    counterText.scrollFactor.set();
-    add(counterText);
+    count = new FlxText(0, 638, FlxG.width, '');
+    count.setFormat(Paths.font('comm.ttf'), 16, FlxColor.WHITE, 'center');
+    count.alignment = 'center';
+    count.scrollFactor.set();
+    add(count);
 
     refreshGallery();
 }
 
 function refreshGallery() {
-    if (entries.length == 0) return;
+    preview.color = entries[selected].color;
+    previewLetter.text = entries[selected].letter;
+    note.text = entries[selected].note;
+    count.text = 'LEFT / RIGHT  BROWSE     //     ESC  BACK     //     ' + (selected + 1) + ' / ' + entries.length;
 
-    art.loadGraphic(Paths.image('gallery/images/' + entries[selected].file));
-    art.setGraphicSize(740);
-    art.updateHitbox();
-    art.x = (FlxG.width - art.width) / 2;
-    art.y = 105 + (395 - art.height) / 2;
-
-    titleText.text = entries[selected].title;
-    descriptionText.text = entries[selected].description;
-    counterText.text = 'LEFT / RIGHT  BROWSE     //     ESC  BACK     //     ' + (selected + 1) + ' OF ' + entries.length;
+    for (i in 0...thumbs.length) {
+        thumbs[i].text = (i == selected ? '> ' : '') + entries[i].name;
+        thumbs[i].color = i == selected ? 0xFFFFD52F : FlxColor.WHITE;
+        thumbs[i].alpha = i == selected ? 1 : 0.55;
+    }
 }
 
 function update(elapsed:Float) {
@@ -91,5 +112,5 @@ function update(elapsed:Float) {
         FlxG.sound.play(Paths.sound('menu/scroll'), 0.6);
     }
 
-    if (controls.BACK) FlxG.switchState(new MainMenuState());
+    if (controls.BACK) FlxG.switchState(new ModState('TTF/TTFMainMenu'));
 }

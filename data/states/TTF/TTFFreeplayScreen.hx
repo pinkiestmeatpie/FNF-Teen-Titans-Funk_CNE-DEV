@@ -1,3 +1,6 @@
+import flixel.FlxSprite;
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
 // Teen Titans Funk! - custom freeplay screen
 import funkin.menus.FreeplaySonglist;
 import funkin.backend.Paths;

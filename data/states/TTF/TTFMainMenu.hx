@@ -23,10 +23,10 @@ function create() {
     scene.setGraphicSize(FlxG.width, FlxG.height);
     scene.updateHitbox();
     scene.scrollFactor.set();
-    scene.alpha = 0.28;
+    scene.alpha = 0.65;
     add(scene);
 
-    var paper = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xBFF5F2EC);
+    var paper = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0x66F5F2EC);
     paper.scrollFactor.set();
     add(paper);
 

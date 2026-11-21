@@ -1,3 +1,4 @@
+import flixel.addons.display.FlxBackdrop;
 // Gallery screen - the images here are placeholders and can be replaced freely.
 import funkin.backend.Paths;
 import funkin.menus.MainMenuState;

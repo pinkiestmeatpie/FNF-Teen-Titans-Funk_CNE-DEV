@@ -74,18 +74,22 @@ function postCreate() {
 
     // Keep CNE's native character icons on the two staff handles.
     if (iconP1 != null) {
+        remove(iconP1, false);
         iconP1.setGraphicSize(66, 66);
         iconP1.updateHitbox();
         iconP1.x = ttfStaff.x + 5;
         iconP1.y = ttfStaff.y + (ttfStaff.height - iconP1.height) * 0.5;
         iconP1.cameras = [camHUD];
+        add(iconP1);
     }
     if (iconP2 != null) {
+        remove(iconP2, false);
         iconP2.setGraphicSize(66, 66);
         iconP2.updateHitbox();
         iconP2.x = ttfStaff.x + ttfStaff.width - iconP2.width - 5;
         iconP2.y = ttfStaff.y + (ttfStaff.height - iconP2.height) * 0.5;
         iconP2.cameras = [camHUD];
+        add(iconP2);
     }
 
     ttfRating = new FlxText(0, ttfStaff.y - 58, FlxG.width, '');

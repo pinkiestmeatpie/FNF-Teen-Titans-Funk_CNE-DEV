@@ -155,6 +155,10 @@ function create() {
 	blackText.setFormat(Paths.font("montserrat/medium.ttf"), 24, FlxColor.WHITE, 'center');
 	blackText.scrollFactor.set();
 
+	var webcamHint = new FlxText(160, 100, 400, "F8: webcam eyes demo", 16);
+	webcamHint.scrollFactor.set();
+	add(webcamHint);
+
 	FlxTween.tween(FlxG.camera, {zoom: 1.8}, 1.5, {ease: FlxEase.quintOut, type: FlxTweenType.BACKWARD, onComplete: () -> isZoomLerp = true});
 	FlxTween.tween(bgChar, {x: 970 - (bgChar.width/2)}, 2.5, {ease: FlxEase.quintOut});
 }
@@ -208,6 +212,10 @@ function update(dt) {
 		if (popupAppear) {
 			if (controls.ACCEPT || controls.BACK) closePopup();
 		} else {
+			if (FlxG.keys.justPressed.F8) {
+				FlxG.switchState(new ModState("TTF/WebcamEyesDemo"));
+				return;
+			}
 			if (canAccessDebugMenus && FlxG.keys.justPressed.SEVEN) {
 				persistentUpdate = false;
 				persistentDraw = true;

@@ -51,6 +51,14 @@ The tracker and game must run on the same computer and use the same `TMPDIR`, `T
 
 ## Use it with a character
 
-The demo in `data/states/TTF/WebcamEyesDemo.hx` is a working example. In another state or song script, create and load `Script.create(Paths.script("data/scripts/WebcamGaze"))`, then call `readGaze` on it periodically. The result has `x` and `y` in the range -1 to 1, and `active` indicates a fresh face detection. Smooth the values over time and use them as small offsets for separate pupil sprites; call `destroy()` on the script when finished.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:fca325f3bd318e788fa927b7390384c23676df84d4612dea8f6438fcf4483243 -->
+
+The demo in `data/states/TTF/WebcamEyesDemo.hx` is a working example. Its `eyeSmoothing` value controls how quickly the pupils move: smaller values look smoother but respond more slowly. `faceLossGrace` is the time in seconds to hold the last position after a missed detection before returning to center.
+
+In another state or song script, create and load `Script.create(Paths.script("data/scripts/WebcamGaze"))`, then call `readGaze` on it periodically. The result has `x` and `y` in the range -1 to 1, and `active` indicates a fresh face detection. Smooth the values over time and use them as small offsets for separate pupil sprites; call `destroy()` on the script when finished.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 A character with eyes painted into a single sprite needs artwork with separate pupils and matching eye whites, positioned and synchronized for each animation frame. Keep pupils inside the eye shapes and adjust the movement range for the art. No existing character artwork has been changed by this demo.

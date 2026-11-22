@@ -10,6 +10,12 @@ var targetY:Float = 0;
 var lookX:Float = 0;
 var lookY:Float = 0;
 var pollTimer:Float = 0;
+// Lower smoothing speeds make movement gentler, but slower to respond.
+var eyeSmoothing:Float = 4;
+// Hold the last position briefly when the detector misses a face.
+var faceLossGrace:Float = 0.45;
+var faceMissingFor:Float = 0;
+var faceDetected:Bool = false;
 
 function create() {
     FlxG.camera.bgColor = 0xFF171322;
@@ -46,13 +52,22 @@ function update(elapsed:Float) {
     if (pollTimer <= 0) {
         pollTimer = 0.1;
         var gaze = gazeScript.call("readGaze");
-        if (gaze != null) {
+        faceDetected = gaze != null && gaze.active;
+        if (faceDetected) {
             targetX = gaze.x;
             targetY = gaze.y;
-            statusText.text = gaze.active ? "Face detected" : "Waiting for the optional webcam tracker...";
+            faceMissingFor = 0;
+        }
+        statusText.text = faceDetected ? "Face detected" : "Waiting for the optional webcam tracker...";
+    }
+    if (!faceDetected) {
+        faceMissingFor += elapsed;
+        if (faceMissingFor >= faceLossGrace) {
+            targetX = 0;
+            targetY = 0;
         }
     }
-    var amount = 1 - Math.exp(-8 * elapsed);
+    var amount = 1 - Math.exp(-eyeSmoothing * elapsed);
     lookX += (targetX - lookX) * amount;
     lookY += (targetY - lookY) * amount;
     irisLeft.setPosition(475 + lookX * 48, 305 + lookY * 24);

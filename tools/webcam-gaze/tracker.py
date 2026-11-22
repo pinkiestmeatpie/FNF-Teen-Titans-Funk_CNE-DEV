@@ -114,7 +114,9 @@ def run(camera_index, path, backend="auto", stop_event=None):
 def watch_parent(stop_event):
     # The game owns this pipe. EOF means it closed or exited.
     try:
-        sys.stdin.buffer.read(1)
+        # Read the OS handle directly so a blocked daemon does not hold the
+        # buffered stdin lock during normal Python shutdown.
+        os.read(sys.stdin.fileno(), 1)
     except (OSError, ValueError):
         pass
     stop_event.set()

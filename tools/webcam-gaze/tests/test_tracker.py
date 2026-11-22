@@ -207,6 +207,33 @@ class VideoCapture:
                     process.kill()
                     process.wait()
 
+    def test_tracker_can_exit_with_parent_pipe_still_open(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "cv2.py").write_text('''\
+class data:
+    haarcascades = ""
+class CascadeClassifier:
+    def __init__(self, path): pass
+    def empty(self): return False
+class VideoCapture:
+    def __init__(self, index): pass
+    def isOpened(self): return False
+    def release(self): pass
+''')
+            env = dict(os.environ, PYTHONPATH=str(root))
+            process = subprocess.Popen(
+                [sys.executable, str(Path(tracker.__file__)), "--parent-stdin"],
+                stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=env,
+            )
+            try:
+                self.assertEqual(process.wait(timeout=5), 1)
+            finally:
+                process.stdin.close()
+                if process.poll() is None:
+                    process.kill()
+                    process.wait()
+
 
 if __name__ == "__main__":
     unittest.main()

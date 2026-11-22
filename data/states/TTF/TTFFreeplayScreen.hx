@@ -16,6 +16,7 @@ var leaving:Bool = false;
 var pupil:FlxSprite;
 var gazeScript:Script;
 var trackerProcess:Process;
+var preparationProcess:Process;
 var webcamNotice:FlxText;
 var secretKeys:Array<Int> = [82, 69, 71, 82, 69, 84]; // REGRET
 var secretProgress:Int = 0;
@@ -78,6 +79,7 @@ function create() {
     hint.setFormat(Paths.font('comm.ttf'), 19, 0xFFAAAAAA, 'center');
     add(hint);
     refresh(true);
+    prepareWebcam();
 }
 function refresh(animateCover:Bool) {
     if (songs.length == 0) {
@@ -203,10 +205,13 @@ function startTracker() {
         return;
     }
     try {
-        var root = ModsFolder.modsPath;
-        var lastChar = root.charAt(root.length - 1);
-        if (lastChar != '/' && lastChar != '\\') root += '/';
-        root = FileSystem.fullPath(root + ModsFolder.currentModFolder);
+        var root = modRoot();
+        var bundledPython = root + '/tools/webcam-gaze/windows/runtime/python.exe';
+        var launcher = root + '/tools/webcam-gaze/windows/launcher.py';
+        if (system == 'Windows' && FileSystem.exists(bundledPython) && FileSystem.exists(launcher)) {
+            trackerProcess = new Process(bundledPython, [launcher, '--parent-stdin']);
+            return;
+        }
         var python = root + (system == 'Windows' ? '/.venv-webcam/Scripts/python.exe' : '/.venv-webcam/bin/python');
         var tracker = root + '/tools/webcam-gaze/tracker.py';
         if (!FileSystem.exists(python) || !FileSystem.exists(tracker)) {
@@ -219,6 +224,26 @@ function startTracker() {
     } catch (error:Dynamic) {
         webcamNotice.visible = true;
         trace('Webcam tracker could not start: ' + error);
+    }
+}
+
+function modRoot():String {
+    var root = ModsFolder.modsPath;
+    var lastChar = root.charAt(root.length - 1);
+    if (lastChar != '/' && lastChar != '\\') root += '/';
+    return FileSystem.fullPath(root + ModsFolder.currentModFolder);
+}
+
+function prepareWebcam() {
+    if (Sys.systemName() != 'Windows' || ModsFolder.currentModFolder == null) return;
+    try {
+        var root = modRoot();
+        var python = root + '/tools/webcam-gaze/windows/runtime/python.exe';
+        var launcher = root + '/tools/webcam-gaze/windows/launcher.py';
+        if (FileSystem.exists(python) && FileSystem.exists(launcher))
+            preparationProcess = new Process(python, [launcher, '--prepare-only', '--parent-stdin']);
+    } catch (error:Dynamic) {
+        trace('Webcam preparation could not start: ' + error);
     }
 }
 
@@ -255,7 +280,7 @@ function updateSecret(elapsed:Float) {
     if (trackerProcess != null) {
         if (trackerResponding) trackerMissingFor = 0;
         else trackerMissingFor += elapsed;
-        webcamNotice.visible = trackerMissingFor >= 4;
+        webcamNotice.visible = trackerMissingFor >= 8;
     }
     if (!faceDetected) {
         faceMissingFor += elapsed;
@@ -273,5 +298,9 @@ function destroy() {
     FlxTween.cancelTweensOf(cover);
     FlxTween.cancelTweensOf(coverLabel);
     stopTracker();
+    if (preparationProcess != null) {
+        preparationProcess.close();
+        preparationProcess = null;
+    }
     if (gazeScript != null) gazeScript.destroy();
 }

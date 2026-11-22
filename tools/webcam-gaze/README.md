@@ -16,7 +16,25 @@ The demo follows the position of your face in the webcam image. It does not meas
 
 <!-- /coderabbit-ai-generated:v1 -->
 
-## Try it
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:e68acc43bcca730b9b3091a96e770735873cb5fdf5e0ac126a863ddbe65d3dc7 -->
+
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:508d6b83f3ca2f4c04193990d8aed084fb73bf2bd9d617ff7e706f88fd2f6041 -->
+
+## Windows automatic setup
+
+On Windows x64, the Freeplay secret includes its own Python and camera libraries. Keep the mod as an extracted folder. Opening Freeplay prepares the bundled libraries in the background; typing the secret starts the camera without a terminal or a separate Python installation. The camera is released when the secret ends or the game exits. Windows camera access must be enabled.
+
+## Manual demo and other systems
+
+The optional F8 webcam demo and the macOS/Linux tracker can be run manually using the setup below.
+
+<!-- /coderabbit-ai-generated:v1 -->
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 1. Install Python 3 and open a terminal in this mod folder. Create an environment and install the tracker dependency:
 
@@ -47,7 +65,13 @@ The demo follows the position of your face in the webcam image. It does not meas
 
 <!-- coderabbit-ai-generated-section:v1:19bd772cbd74d534ce23eb63ee495f50121c60c10074fbd5f0691556b42c8403 -->
 
-For automatic tracking during the Freeplay secret, keep the mod as an extracted folder, complete the Python environment and dependency installation above inside that folder, then close the manually started tracker. The game uses that environment when the secret starts; on Windows it selects the Media Foundation camera backend. If a tracker is already running, the game uses it and leaves it under your control.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:becdfc957f4305002fe885c55a7c63c2492b4c0fce4df27dc5f66d5a5d826d13 -->
+
+For automatic tracking during the Freeplay secret on macOS and Linux, keep the mod as an extracted folder, complete the Python environment and dependency installation above inside that folder, then close the manually started tracker. The game uses that environment when the secret starts. If a tracker is already running, the game uses it and leaves it under your control.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- /coderabbit-ai-generated:v1 -->
 

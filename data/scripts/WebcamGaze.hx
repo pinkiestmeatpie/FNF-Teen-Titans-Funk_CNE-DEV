@@ -16,18 +16,19 @@ function gazeFile() {
 
 // Returns screen-relative face coordinates in [-1, 1], or a centered fallback.
 function readGaze() {
-    var fallback = {x: 0.0, y: 0.0, active: false};
+    var fallback = {x: 0.0, y: 0.0, active: false, running: false};
     try {
         var path = gazeFile();
         if (!FileSystem.exists(path)) return fallback;
         var fields = File.getContent(path).split("|");
-        if (fields.length != 6 || fields[0] != "1" || fields[2] != "1") return fallback;
+        if (fields.length != 6 || fields[0] != "1" || (fields[2] != "0" && fields[2] != "1")) return fallback;
         var age = Date.now().getTime() / 1000 - Std.parseFloat(fields[1]);
         if (!Math.isFinite(age) || age < -1 || age > 1) return fallback;
+        if (fields[2] == "0") return {x: 0.0, y: 0.0, active: false, running: true};
         var x:Float = Std.parseFloat(fields[3]);
         var y:Float = Std.parseFloat(fields[4]);
         if (!Math.isFinite(x) || !Math.isFinite(y)) return fallback;
-        return {x: Math.max(-1, Math.min(1, x)), y: Math.max(-1, Math.min(1, y)), active: true};
+        return {x: Math.max(-1, Math.min(1, x)), y: Math.max(-1, Math.min(1, y)), active: true, running: true};
     } catch (error:Dynamic) {
         return fallback;
     }

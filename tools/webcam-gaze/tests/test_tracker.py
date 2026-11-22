@@ -1,7 +1,10 @@
 import importlib.util
+import os
 from pathlib import Path
+import subprocess
 import sys
 import tempfile
+import time
 import types
 import unittest
 from unittest.mock import patch
@@ -121,6 +124,88 @@ class TrackerTests(unittest.TestCase):
             self.assertEqual(captured[0][2], "1")
             self.assertAlmostEqual(float(captured[0][3]), 0.8)
             self.assertAlmostEqual(float(captured[0][4]), 0.0)
+
+    def test_automatic_tracker_stops_when_parent_pipe_closes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "cv2.py").write_text('''\
+import os
+from pathlib import Path
+class data:
+    haarcascades = ""
+CAP_MSMF = 1400
+COLOR_BGR2GRAY = 1
+class CascadeClassifier:
+    def __init__(self, path): pass
+    def empty(self): return False
+    def detectMultiScale(self, *a, **k): return []
+class Frame:
+    shape = (100, 100, 3)
+class VideoCapture:
+    def __init__(self, index, backend): assert (index, backend) == (0, CAP_MSMF)
+    def isOpened(self): return True
+    def read(self): return True, Frame()
+    def release(self): Path(os.environ["RELEASE_MARKER"]).write_text("released")
+def cvtColor(frame, color): return frame
+''')
+            sample = root / "sample.txt"
+            marker = root / "released.txt"
+            env = dict(os.environ, PYTHONPATH=str(root), TTF_GAZE_FILE=str(sample), RELEASE_MARKER=str(marker))
+            process = subprocess.Popen(
+                [sys.executable, str(Path(tracker.__file__)), "--backend", "msmf", "--parent-stdin"],
+                stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=env,
+            )
+            try:
+                deadline = time.monotonic() + 5
+                while not sample.exists() and process.poll() is None and time.monotonic() < deadline:
+                    time.sleep(0.01)
+                self.assertTrue(sample.exists(), "tracker did not publish a sample")
+                process.stdin.close()
+                self.assertEqual(process.wait(timeout=5), 0)
+                self.assertTrue(marker.exists(), "camera was not released")
+                self.assertFalse(sample.exists(), "owned sample was not cleaned up")
+            finally:
+                if process.poll() is None:
+                    process.kill()
+                    process.wait()
+
+    def test_parent_watchdog_exits_when_camera_read_is_stuck(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "cv2.py").write_text('''\
+import os, time
+from pathlib import Path
+class data:
+    haarcascades = ""
+CAP_MSMF = 1400
+class CascadeClassifier:
+    def __init__(self, path): pass
+    def empty(self): return False
+class VideoCapture:
+    def __init__(self, index, backend): pass
+    def isOpened(self): return True
+    def read(self):
+        Path(os.environ["READ_MARKER"]).write_text("blocked")
+        time.sleep(60)
+    def release(self): pass
+''')
+            marker = root / "reading.txt"
+            env = dict(os.environ, PYTHONPATH=str(root), TTF_GAZE_FILE=str(root / "sample.txt"), READ_MARKER=str(marker))
+            process = subprocess.Popen(
+                [sys.executable, str(Path(tracker.__file__)), "--backend", "msmf", "--parent-stdin"],
+                stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=env,
+            )
+            try:
+                deadline = time.monotonic() + 5
+                while not marker.exists() and process.poll() is None and time.monotonic() < deadline:
+                    time.sleep(0.01)
+                self.assertTrue(marker.exists(), "camera did not enter the mocked read")
+                process.stdin.close()
+                self.assertEqual(process.wait(timeout=5), 0)
+            finally:
+                if process.poll() is None:
+                    process.kill()
+                    process.wait()
 
 
 if __name__ == "__main__":

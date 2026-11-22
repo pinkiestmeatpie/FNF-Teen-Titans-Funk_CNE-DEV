@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 import sys
 import tempfile
+import threading
 import time
 import uuid
 
@@ -47,7 +48,7 @@ def publish(path, payload):
             os.unlink(name)
 
 
-def run(camera_index, path, backend="auto"):
+def run(camera_index, path, backend="auto", stop_event=None):
     try:
         import cv2
     except ImportError:
@@ -58,6 +59,8 @@ def run(camera_index, path, backend="auto"):
     if cascade.empty():
         print("OpenCV's face detector could not be loaded.", file=sys.stderr)
         return 1
+    if stop_event is not None and stop_event.is_set():
+        return 0
     if backend == "auto":
         camera = cv2.VideoCapture(camera_index)
     else:
@@ -66,11 +69,14 @@ def run(camera_index, path, backend="auto"):
         camera.release()
         print(f"Could not open camera {camera_index}. Check permission and --camera.", file=sys.stderr)
         return 1
+    if stop_event is not None and stop_event.is_set():
+        camera.release()
+        return 0
 
     owner = uuid.uuid4().hex
     print(f"Camera is active. Sending face position to {path}. Press Ctrl+C to stop.", flush=True)
     try:
-        while True:
+        while stop_event is None or not stop_event.is_set():
             started = time.monotonic()
             ok, frame = camera.read()
             if not ok or frame is None:
@@ -84,7 +90,12 @@ def run(camera_index, path, backend="auto"):
                 face = max(faces, key=lambda rect: int(rect[2]) * int(rect[3]))
                 sample["x"], sample["y"] = position(face, width, height)
             publish(path, sample)
-            time.sleep(max(0, 0.1 - (time.monotonic() - started)))
+            delay = max(0, 0.1 - (time.monotonic() - started))
+            if stop_event is None:
+                time.sleep(delay)
+            else:
+                stop_event.wait(delay)
+        return 0
     except KeyboardInterrupt:
         return 0
     except OSError as exc:
@@ -100,13 +111,30 @@ def run(camera_index, path, backend="auto"):
             pass
 
 
+def watch_parent(stop_event):
+    # The game owns this pipe. EOF means it closed or exited.
+    try:
+        sys.stdin.buffer.read(1)
+    except (OSError, ValueError):
+        pass
+    stop_event.set()
+    # A stuck camera driver must not leave the camera open after the game exits.
+    time.sleep(2)
+    os._exit(0)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Track a face locally for the Teen Titans Funk webcam demo")
     parser.add_argument("--camera", type=int, default=0, help="camera index (default: 0)")
     parser.add_argument("--backend", choices=("auto", "msmf", "dshow"), default="auto",
                         help="camera backend (default: auto; msmf and dshow are Windows options)")
+    parser.add_argument("--parent-stdin", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args()
-    return run(args.camera, gaze_path(), args.backend)
+    stop_event = None
+    if args.parent_stdin:
+        stop_event = threading.Event()
+        threading.Thread(target=watch_parent, args=(stop_event,), daemon=True).start()
+    return run(args.camera, gaze_path(), args.backend, stop_event)
 
 
 if __name__ == "__main__":

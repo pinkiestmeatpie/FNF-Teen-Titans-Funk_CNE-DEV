@@ -2,7 +2,19 @@
 
 # Webcam eyes demo
 
-The demo follows the position of your face in the webcam image. It does not measure where your eyes are looking. The camera is **off by default**; it is opened only when you launch the separate tracker. Frames are processed locally and never sent to the game or saved. The tracker writes only a timestamp, face position and status to a temporary file.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:eb5cde3921dbf0ad6ee6ab1c18d4ab2b355ebc7dfe4d3cf078cc5e3f673a325d -->
+
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:677b93cfd66e674b93f2596d3d4943643ff98bb17e858cb09d0b598796e961e4 -->
+
+The demo follows the position of your face in the webcam image. It does not measure where your eyes are looking. The camera is **off by default**. The Freeplay secret starts the tracker when activated and closes it when the sequence ends or the game exits. Frames are processed locally and never sent to the game or saved. The tracker writes only a timestamp, face position and status to a temporary file.
+
+<!-- /coderabbit-ai-generated:v1 -->
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 ## Try it
 
@@ -25,7 +37,21 @@ The demo follows the position of your face in the webcam image. It does not meas
    ```
 
 2. Grant camera access if your operating system asks. Start Codename Engine with this mod and press **F8** on its main menu. Move your face left, right, up and down. Escape returns to the menu.
-3. Stop the tracker with **Ctrl+C** in its terminal to release the camera. Closing or leaving the game does not stop the separate tracker.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:a20f648da161f5bd13f800f38e94967147db66e9db95eb5739491a960bbe9b30 -->
+
+3. Stop a manually started tracker with **Ctrl+C** in its terminal to release the camera. Closing or leaving the game does not stop a tracker you started yourself.
+
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:19bd772cbd74d534ce23eb63ee495f50121c60c10074fbd5f0691556b42c8403 -->
+
+For automatic tracking during the Freeplay secret, keep the mod as an extracted folder, complete the Python environment and dependency installation above inside that folder, then close the manually started tracker. The game uses that environment when the secret starts; on Windows it selects the Media Foundation camera backend. If a tracker is already running, the game uses it and leaves it under your control.
+
+<!-- /coderabbit-ai-generated:v1 -->
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- coderabbit-ai-generated:v1 -->
 

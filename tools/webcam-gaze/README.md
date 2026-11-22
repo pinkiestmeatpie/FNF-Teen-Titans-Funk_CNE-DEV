@@ -26,11 +26,23 @@ The demo follows the position of your face in the webcam image. It does not meas
 
 ## Windows automatic setup
 
-On Windows x64, the Freeplay secret includes its own Python and camera libraries. Keep the mod as an extracted folder. Opening Freeplay prepares the bundled libraries in the background; typing the secret starts the camera without a terminal or a separate Python installation. The camera is released when the secret ends or the game exits. Windows camera access must be enabled.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:a049641d66f00f1bd46cb0b08b60c17d94b14c22ae1f0121472db90ddbcbf4d3 -->
+
+On Windows x64, keep the mod as an extracted folder. The Freeplay secret uses the existing `.venv-webcam` when present; otherwise it prepares bundled camera libraries in the background. Typing the secret starts the camera without a terminal or a separate Python installation. The camera is released when the secret ends or the game exits. Windows camera access must be enabled.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 ## Manual demo and other systems
 
-The optional F8 webcam demo and the macOS/Linux tracker can be run manually using the setup below.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:b1eb82df64fb92a1bebb9db736f9b47800786e44091a34c0166b2d44d872fbc2 -->
+
+On Windows x64, press **F8** on the mod’s main menu to open a live webcam test with the same automatic setup as Freeplay. The test tells you when it detects a face or can’t read from a camera. Press **Escape** to close it. On macOS and Linux, use the setup below.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- /coderabbit-ai-generated:v1 -->
 

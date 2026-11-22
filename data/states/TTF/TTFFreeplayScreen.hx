@@ -1,9 +1,5 @@
 import funkin.menus.FreeplayState.FreeplaySonglist;
 import funkin.backend.scripting.Script;
-import funkin.backend.assets.ModsFolder;
-import Sys;
-import sys.FileSystem;
-import sys.io.Process;
 
 var songs:Array<Dynamic> = [];
 var selected:Int = 0;
@@ -15,16 +11,12 @@ var diffLabel:FlxText;
 var leaving:Bool = false;
 var pupil:FlxSprite;
 var gazeScript:Script;
-var trackerProcess:Process;
-var preparationProcess:Process;
 var webcamNotice:FlxText;
 var secretKeys:Array<Int> = [82, 69, 71, 82, 69, 84]; // REGRET
 var secretProgress:Int = 0;
 var secretActive:Bool = false;
 var secretTime:Float = 0;
 var gazePollTimer:Float = 0;
-var trackerResponding:Bool = false;
-var trackerMissingFor:Float = 0;
 var faceDetected:Bool = false;
 var faceMissingFor:Float = 0;
 var targetX:Float = 0;
@@ -71,7 +63,7 @@ function create() {
     diffLabel = new FlxText(55, 570, 570, '', 24);
     diffLabel.setFormat(Paths.font('comm.ttf'), 24, FlxColor.WHITE, 'left');
     add(diffLabel);
-    webcamNotice = new FlxText(55, 615, 1170, 'Webcam unavailable. Check the tracker setup and camera permission.', 16);
+    webcamNotice = new FlxText(55, 615, 1170, '', 16);
     webcamNotice.setFormat(Paths.font('comm.ttf'), 16, 0xFFAAAAAA, 'center');
     webcamNotice.visible = false;
     add(webcamNotice);
@@ -79,7 +71,9 @@ function create() {
     hint.setFormat(Paths.font('comm.ttf'), 19, 0xFFAAAAAA, 'center');
     add(hint);
     refresh(true);
-    prepareWebcam();
+    gazeScript = Script.create(Paths.script('data/scripts/WebcamGaze'));
+    gazeScript.load();
+    gazeScript.call('prepareWebcam');
 }
 function refresh(animateCover:Bool) {
     if (songs.length == 0) {
@@ -190,74 +184,13 @@ function startSecret() {
     pupil.updateHitbox();
     pupil.setPosition(cover.x, cover.y);
     pupil.visible = true;
-    gazeScript = Script.create(Paths.script('data/scripts/WebcamGaze'));
-    gazeScript.load();
-    startTracker();
-}
-
-function startTracker() {
-    // A separately started tracker remains owned by the player.
-    var existing = gazeScript.call('readGaze');
-    if (existing != null && existing.running) return;
-    var system = Sys.systemName();
-    if (ModsFolder.currentModFolder == null || (system != 'Windows' && system != 'Linux' && system != 'Mac')) {
-        webcamNotice.visible = true;
-        return;
-    }
-    try {
-        var root = modRoot();
-        var bundledPython = root + '/tools/webcam-gaze/windows/runtime/python.exe';
-        var launcher = root + '/tools/webcam-gaze/windows/launcher.py';
-        if (system == 'Windows' && FileSystem.exists(bundledPython) && FileSystem.exists(launcher)) {
-            trackerProcess = new Process(bundledPython, [launcher, '--parent-stdin']);
-            return;
-        }
-        var python = root + (system == 'Windows' ? '/.venv-webcam/Scripts/python.exe' : '/.venv-webcam/bin/python');
-        var tracker = root + '/tools/webcam-gaze/tracker.py';
-        if (!FileSystem.exists(python) || !FileSystem.exists(tracker)) {
-            webcamNotice.visible = true;
-            return;
-        }
-        // Preserve the virtual environment's Python path, which can be a symlink.
-        var backend = system == 'Windows' ? 'msmf' : 'auto';
-        trackerProcess = new Process(python, [tracker, '--backend', backend, '--parent-stdin']);
-    } catch (error:Dynamic) {
-        webcamNotice.visible = true;
-        trace('Webcam tracker could not start: ' + error);
-    }
-}
-
-function modRoot():String {
-    var root = ModsFolder.modsPath;
-    var lastChar = root.charAt(root.length - 1);
-    if (lastChar != '/' && lastChar != '\\') root += '/';
-    return FileSystem.fullPath(root + ModsFolder.currentModFolder);
-}
-
-function prepareWebcam() {
-    if (Sys.systemName() != 'Windows' || ModsFolder.currentModFolder == null) return;
-    try {
-        var root = modRoot();
-        var python = root + '/tools/webcam-gaze/windows/runtime/python.exe';
-        var launcher = root + '/tools/webcam-gaze/windows/launcher.py';
-        if (FileSystem.exists(python) && FileSystem.exists(launcher))
-            preparationProcess = new Process(python, [launcher, '--prepare-only', '--parent-stdin']);
-    } catch (error:Dynamic) {
-        trace('Webcam preparation could not start: ' + error);
-    }
-}
-
-function stopTracker() {
-    if (trackerProcess == null) return;
-    // Closing the owned process pipes tells the helper to release the camera.
-    trackerProcess.close();
-    trackerProcess = null;
+    gazeScript.call('startWebcam');
 }
 
 function updateSecret(elapsed:Float) {
     secretTime += elapsed;
     if (secretTime >= 15) {
-        stopTracker();
+        gazeScript.call('stopWebcam');
         PlayState.loadSong('hypnotized', 'hard', false, false);
         ttfRegretReturnToAbc = true;
         ttfRegretReturnDifficulty = difficulty;
@@ -268,19 +201,16 @@ function updateSecret(elapsed:Float) {
     gazePollTimer -= elapsed;
     if (gazePollTimer <= 0) {
         gazePollTimer = 0.1;
-        var gaze = gazeScript.call('readGaze');
-        trackerResponding = gaze != null && gaze.running;
+        var webcam = gazeScript.call('pollWebcam');
+        var gaze = webcam == null ? null : webcam.gaze;
+        webcamNotice.visible = gaze != null && !gaze.running && secretTime >= 8;
+        if (webcamNotice.visible) webcamNotice.text = webcam.message;
         faceDetected = gaze != null && gaze.active;
         if (faceDetected) {
             targetX = gaze.x;
             targetY = gaze.y;
             faceMissingFor = 0;
         }
-    }
-    if (trackerProcess != null) {
-        if (trackerResponding) trackerMissingFor = 0;
-        else trackerMissingFor += elapsed;
-        webcamNotice.visible = trackerMissingFor >= 8;
     }
     if (!faceDetected) {
         faceMissingFor += elapsed;
@@ -297,10 +227,8 @@ function updateSecret(elapsed:Float) {
 function destroy() {
     FlxTween.cancelTweensOf(cover);
     FlxTween.cancelTweensOf(coverLabel);
-    stopTracker();
-    if (preparationProcess != null) {
-        preparationProcess.close();
-        preparationProcess = null;
+    if (gazeScript != null) {
+        gazeScript.call('stopWebcam');
+        gazeScript.destroy();
     }
-    if (gazeScript != null) gazeScript.destroy();
 }

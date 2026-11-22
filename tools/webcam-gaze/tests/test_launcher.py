@@ -2,6 +2,7 @@ import hashlib
 import importlib.util
 import os
 from pathlib import Path
+import sys
 import tempfile
 import threading
 import unittest
@@ -58,6 +59,16 @@ class LauncherTests(unittest.TestCase):
                  patch.dict(os.environ, {"LOCALAPPDATA": temp}):
                 with self.assertRaises(launcher.PreparationStopped):
                     launcher.prepare_packages(stopped)
+
+    def test_reports_dependency_setup_failure_to_the_game(self):
+        with tempfile.TemporaryDirectory() as temp:
+            session = Path(temp) / "session.txt"
+            with patch.object(sys, "argv", ["launcher.py", "--session-file", str(session)]), \
+                 patch.object(launcher, "prepare_packages", side_effect=OSError("package missing")), \
+                 patch.object(launcher.tracker, "run") as run:
+                self.assertEqual(launcher.main(), 1)
+            self.assertEqual(session.read_text(), "status|install")
+            run.assert_not_called()
 
     def test_concurrent_preparation_shares_finished_installation(self):
         with tempfile.TemporaryDirectory() as temp:

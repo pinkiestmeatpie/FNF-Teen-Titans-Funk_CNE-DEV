@@ -79,6 +79,28 @@ class TrackerTests(unittest.TestCase):
             self.assertEqual(tracker.run(0, Path("unused")), 1)
         self.assertEqual(calls, [(0, 1400), (0,)])
 
+    def test_automatic_camera_fallback_requires_a_frame(self):
+        frame = object()
+        attempts = []
+        released = []
+
+        class Camera:
+            def __init__(self, index, backend):
+                self.key = (index, backend)
+                attempts.append(self.key)
+            def isOpened(self): return self.key != (0, 700)
+            def read(self): return (True, frame) if self.key == (1, 1400) else (False, None)
+            def release(self): released.append(self.key)
+
+        cv2 = types.SimpleNamespace(VideoCapture=Camera, CAP_MSMF=1400, CAP_DSHOW=700)
+        camera, first_frame = tracker.open_camera(cv2, ((0, "msmf"), (0, "dshow"), (1, "msmf")), None)
+        try:
+            self.assertEqual(attempts, [(0, 1400), (0, 700), (1, 1400)])
+            self.assertEqual(released, [(0, 1400), (0, 700)])
+            self.assertIs(first_frame, frame)
+        finally:
+            camera.release()
+
     def test_capture_failure_and_cleanup(self):
         class Camera:
             released = False
@@ -168,6 +190,29 @@ def cvtColor(frame, color): return frame
                 if process.poll() is None:
                     process.kill()
                     process.wait()
+
+    def test_automatic_tracker_reports_unavailable_camera_to_session(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "cv2.py").write_text('''
+class data: haarcascades = ""
+CAP_MSMF = 1400
+class CascadeClassifier:
+    def __init__(self, path): pass
+    def empty(self): return False
+class VideoCapture:
+    def __init__(self, index, backend): assert (index, backend) == (0, CAP_MSMF)
+    def isOpened(self): return False
+    def release(self): pass
+''')
+            session = root / "session.txt"
+            env = dict(os.environ, PYTHONPATH=str(root))
+            process = subprocess.run(
+                [sys.executable, str(Path(tracker.__file__)), "--backend", "msmf", "--session-file", str(session)],
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=env, timeout=5,
+            )
+            self.assertEqual(process.returncode, 1)
+            self.assertEqual(session.read_text(), "status|camera")
 
     def test_parent_watchdog_exits_when_camera_read_is_stuck(self):
         with tempfile.TemporaryDirectory() as directory:

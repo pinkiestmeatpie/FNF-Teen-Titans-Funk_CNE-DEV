@@ -18,9 +18,10 @@ import tracker
 
 PACKAGES = (
     ("numpy-2.5.5-cp314-cp314-win_amd64.whl", "20145b11776d2f7570cd61351b156a51d3a341822282095baa819d87272bc710"),
-    ("opencv_python_headless-4.14.0.94-cp37-abi3-win_amd64.whl", "cbed65415b8f6a9541c705afe3e64795840524d0ff3bc58f507826284a1dc64b"),
+    ("opencv_python-4.14.0.94-cp37-abi3-win_amd64.whl", "ace53616cdffc9643e17e075397b493e607c427d388c7508798ef7ad2ed577cc"),
 )
-CACHE_VERSION = "python3144-numpy255-opencv414094"
+CACHE_VERSION = "python3144-numpy255-opencv414094-msmf"
+CAMERAS = ((0, "msmf"), (0, "dshow"), (1, "msmf"), (1, "dshow"))
 
 
 class PreparationStopped(Exception):
@@ -109,21 +110,37 @@ def main():
     parser = argparse.ArgumentParser(description="Start the bundled webcam tracker")
     parser.add_argument("--prepare-only", action="store_true")
     parser.add_argument("--parent-stdin", action="store_true")
+    parser.add_argument("--session-file", type=Path)
     args = parser.parse_args()
+    path = args.session_file or tracker.gaze_path()
+
     stop_event = threading.Event()
+
+    def report(code):
+        if args.session_file is not None and not stop_event.is_set():
+            try:
+                tracker.publish_text(path, "status|" + code)
+            except OSError as exc:
+                print(f"Could not write webcam status: {exc}", file=sys.stderr)
+
     if args.parent_stdin:
         threading.Thread(target=tracker.watch_parent, args=(stop_event,), daemon=True).start()
     try:
+        if not args.prepare_only:
+            report("setup")
         packages = prepare_packages(stop_event)
         if args.prepare_only or stop_event.is_set():
             return 0
         sys.path.insert(0, str(packages))
-        return tracker.run(0, tracker.gaze_path(), "msmf", stop_event)
     except PreparationStopped:
         return 0
     except (OSError, ValueError, zipfile.BadZipFile) as exc:
+        report("install")
         print(f"Webcam setup failed: {exc}", file=sys.stderr)
         return 1
+
+    report("opening")
+    return tracker.run(0, path, "msmf", stop_event, choices=CAMERAS, report=report)
 
 
 if __name__ == "__main__":

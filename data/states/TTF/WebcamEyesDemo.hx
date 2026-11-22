@@ -32,15 +32,16 @@ function create() {
     add(irisLeft);
     add(irisRight);
 
-    statusText = new FlxText(0, 495, FlxG.width, "Waiting for the optional webcam tracker...", 20);
+    statusText = new FlxText(0, 495, FlxG.width, "Starting webcam...", 20);
     statusText.setFormat(null, 20, FlxColor.WHITE, "center");
     add(statusText);
-    var help = new FlxText(0, 545, FlxG.width, "Start the tracker using tools/webcam-gaze instructions.\nPress Escape to return.", 16);
+    var help = new FlxText(0, 545, FlxG.width, "Move your face to test tracking.\nPress Escape to return.", 16);
     help.setFormat(null, 16, 0xFFBDB3CE, "center");
     add(help);
 
     gazeScript = Script.create(Paths.script("data/scripts/WebcamGaze"));
     gazeScript.load();
+    gazeScript.call("startWebcam");
 }
 
 function update(elapsed:Float) {
@@ -51,14 +52,15 @@ function update(elapsed:Float) {
     pollTimer -= elapsed;
     if (pollTimer <= 0) {
         pollTimer = 0.1;
-        var gaze = gazeScript.call("readGaze");
+        var webcam = gazeScript.call("pollWebcam");
+        var gaze = webcam == null ? null : webcam.gaze;
         faceDetected = gaze != null && gaze.active;
         if (faceDetected) {
             targetX = gaze.x;
             targetY = gaze.y;
             faceMissingFor = 0;
         }
-        statusText.text = faceDetected ? "Face detected" : "Waiting for the optional webcam tracker...";
+        if (webcam != null) statusText.text = webcam.message;
     }
     if (!faceDetected) {
         faceMissingFor += elapsed;
@@ -75,5 +77,8 @@ function update(elapsed:Float) {
 }
 
 function destroy() {
-    if (gazeScript != null) gazeScript.destroy();
+    if (gazeScript != null) {
+        gazeScript.call("stopWebcam");
+        gazeScript.destroy();
+    }
 }

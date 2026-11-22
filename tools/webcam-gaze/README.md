@@ -27,7 +27,19 @@ The demo follows the position of your face in the webcam image. It does not meas
 2. Grant camera access if your operating system asks. Start Codename Engine with this mod and press **F8** on its main menu. Move your face left, right, up and down. Escape returns to the menu.
 3. Stop the tracker with **Ctrl+C** in its terminal to release the camera. Closing or leaving the game does not stop the separate tracker.
 
-If the camera is unavailable, the eyes stay centered. Try a different camera with `--camera 1` (or another camera index), check OS camera permissions, and make sure another application has not taken exclusive access. Good lighting and a front-facing face improve detection. The demo runs without the tracker, and stale or missing samples fall back to centered eyes.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:db19df69234f0fbea3cbcccad3e2959834604b63add6912efa59e39487b9750e -->
+
+If the camera is unavailable, the eyes stay centered. Try a different camera with `--camera 1` (or another camera index), check OS camera permissions, and make sure another application has not taken exclusive access. On Windows, if the default camera backend cannot open the device, try `--backend msmf` or `--backend dshow`, for example:
+
+```powershell
+.\.venv-webcam\Scripts\python tools/webcam-gaze/tracker.py --backend msmf
+```
+
+Good lighting and a front-facing face improve detection. The demo runs without the tracker, and stale or missing samples fall back to centered eyes.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- coderabbit-ai-generated:v1 -->
 

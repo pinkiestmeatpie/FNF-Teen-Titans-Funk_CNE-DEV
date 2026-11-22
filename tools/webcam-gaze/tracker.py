@@ -31,13 +31,23 @@ def publish(path, payload):
         with os.fdopen(fd, "w", encoding="utf-8") as stream:
             stream.write("|".join(("1", str(payload["time"]), "1" if payload["found"] else "0",
                                    str(payload.get("x", 0)), str(payload.get("y", 0)), payload["owner"])))
-        os.replace(name, path)
+        # Windows can briefly deny replacement while the game has the old
+        # sample open. Keep the complete temporary file and retry the rename.
+        deadline = time.monotonic() + 1.0
+        while True:
+            try:
+                os.replace(name, path)
+                break
+            except PermissionError as exc:
+                if getattr(exc, "winerror", None) not in (5, 32) or time.monotonic() >= deadline:
+                    raise
+                time.sleep(0.01)
     finally:
         if os.path.exists(name):
             os.unlink(name)
 
 
-def run(camera_index, path):
+def run(camera_index, path, backend="auto"):
     try:
         import cv2
     except ImportError:
@@ -48,7 +58,10 @@ def run(camera_index, path):
     if cascade.empty():
         print("OpenCV's face detector could not be loaded.", file=sys.stderr)
         return 1
-    camera = cv2.VideoCapture(camera_index)
+    if backend == "auto":
+        camera = cv2.VideoCapture(camera_index)
+    else:
+        camera = cv2.VideoCapture(camera_index, getattr(cv2, "CAP_" + backend.upper()))
     if not camera.isOpened():
         camera.release()
         print(f"Could not open camera {camera_index}. Check permission and --camera.", file=sys.stderr)
@@ -90,8 +103,10 @@ def run(camera_index, path):
 def main():
     parser = argparse.ArgumentParser(description="Track a face locally for the Teen Titans Funk webcam demo")
     parser.add_argument("--camera", type=int, default=0, help="camera index (default: 0)")
+    parser.add_argument("--backend", choices=("auto", "msmf", "dshow"), default="auto",
+                        help="camera backend (default: auto; msmf and dshow are Windows options)")
     args = parser.parse_args()
-    return run(args.camera, gaze_path())
+    return run(args.camera, gaze_path(), args.backend)
 
 
 if __name__ == "__main__":

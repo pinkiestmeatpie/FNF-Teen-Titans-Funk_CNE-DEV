@@ -25,6 +25,57 @@ class TrackerTests(unittest.TestCase):
             self.assertEqual(path.read_text(), "1|2|0|0|0|b")
             self.assertEqual(list(Path(directory).iterdir()), [path])
 
+    def test_publish_retries_windows_file_sharing_errors(self):
+        for error_code in (5, 32):
+            with self.subTest(error_code=error_code), tempfile.TemporaryDirectory() as directory:
+                path = Path(directory) / "sample.txt"
+                path.write_text("previous sample")
+                error = PermissionError("file in use")
+                error.winerror = error_code
+                real_replace = tracker.os.replace
+                attempts = []
+                def replace_after_contention(src, dst):
+                    attempts.append(1)
+                    if len(attempts) <= 2:
+                        raise error
+                    return real_replace(src, dst)
+                with patch.object(tracker.os, "replace", side_effect=replace_after_contention) as replace, \
+                     patch.object(tracker.time, "sleep") as sleep:
+                    tracker.publish(path, {"time": 1, "found": True, "x": 0.5, "owner": "a"})
+                self.assertEqual(replace.call_count, 3)
+                self.assertEqual(sleep.call_count, 2)
+                self.assertEqual(path.read_text(), "1|1|1|0.5|0|a")
+                self.assertEqual(list(Path(directory).iterdir()), [path])
+
+    def test_publish_surfaces_persistent_permission_errors_and_cleans_up(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "sample.txt"
+            path.write_text("previous sample")
+            error = PermissionError("file in use")
+            error.winerror = 5
+            with patch.object(tracker.os, "replace", side_effect=error), \
+                 patch.object(tracker.time, "monotonic", side_effect=[0, 2]):
+                with self.assertRaises(PermissionError):
+                    tracker.publish(path, {"time": 1, "found": False, "owner": "a"})
+            self.assertEqual(path.read_text(), "previous sample")
+            self.assertEqual(list(Path(directory).iterdir()), [path])
+
+    def test_selected_camera_backend_is_passed_to_opencv(self):
+        class Camera:
+            def isOpened(self): return False
+            def release(self): pass
+        calls = []
+        fake_cv = types.SimpleNamespace(
+            data=types.SimpleNamespace(haarcascades=""),
+            CascadeClassifier=lambda path: types.SimpleNamespace(empty=lambda: False),
+            CAP_MSMF=1400,
+            VideoCapture=lambda *args: calls.append(args) or Camera(),
+        )
+        with patch.dict(sys.modules, {"cv2": fake_cv}):
+            self.assertEqual(tracker.run(0, Path("unused"), "msmf"), 1)
+            self.assertEqual(tracker.run(0, Path("unused")), 1)
+        self.assertEqual(calls, [(0, 1400), (0,)])
+
     def test_capture_failure_and_cleanup(self):
         class Camera:
             released = False
